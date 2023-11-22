@@ -1,4 +1,5 @@
-import { config } from "../config/config-database";
+import { config } from "../config/config-database-example";
+
 
 export const databaseProviders = [
 	{
