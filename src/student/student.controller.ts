@@ -22,7 +22,7 @@ export class StudentController {
         return this.studentService.createStudent(createStudentDto);
     }
     
-    @Put(':ID')
+    @Put(':id')
     updateStudent(@Param('id') id:string, @Body() updateStudentDto: UpdateStudentDto) {
         return this.studentService.updateStudent(id, updateStudentDto);
     }
