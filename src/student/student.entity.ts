@@ -17,7 +17,6 @@ export class Student extends BaseEntity implements CreateStudentDto {
 		type: "text",
 		unique: true,
 		nullable: true,
-		length: "12",
 	})
 	tel: string;
 
@@ -44,74 +43,74 @@ export class Student extends BaseEntity implements CreateStudentDto {
 	gitHubUserName: string;
 
 	@Column({
-		type: "array",
+		type: "simple-array",
 		nullable: true,
 	})
 	portfolioUrls: string[];
 
 	@Column({
-		type: "array",
+		type: "simple-array",
 		nullable: true,
 	})
 	projectUrls: string[];
 
-    @Column({
+	@Column({
 		type: "text",
 		nullable: false,
 	})
 	bio: string;
 
-    @Column({
-		type: "enum",
+	@Column({
+		type: "text",
 		nullable: false,
 	})
 	expectedTypeWork: string;
 
-    @Column({
-        type: "text",
-        nullable: true,
-    })
+	@Column({
+		type: "text",
+		nullable: true,
+	})
 	targetWorkCity: string;
 
-    @Column({
-        type: "enum",
-        nullable: true,
-    })
+	@Column({
+		type: "text",
+		nullable: true,
+	})
 	expectedContractType: string;
 
-    @Column({
-        type: "shorttext",
-        default: "0",
-    })
+	@Column({
+		type: "text",
+		default: "0",
+	})
 	expectedSalary: string;
 
-    @Column({
-        type: "enum",
-        default: "nie",
-    })
+	@Column({
+		type: "text",
+		default: "nie",
+	})
 	canTakeApprenticeship: string;
 
-    @Column({
-        type: "int",
-        default: 0,
-    })
+	@Column({
+		type: "int",
+		default: 0,
+	})
 	monthsOfCommercialExp: number;
-	
-    @Column({
-        type: "longtext",
-        nullable: true,
-    })
-    education: string;
 
-    @Column({
-        type: "longtext",
-        nullable: true,
-    })
+	@Column({
+		type: "longtext",
+		nullable: true,
+	})
+	education: string;
+
+	@Column({
+		type: "longtext",
+		nullable: true,
+	})
 	workExperience: string;
 
-    @Column({
-        type: "longtext",
-        nullable: true,
-    })
+	@Column({
+		type: "longtext",
+		nullable: true,
+	})
 	courses: string;
 }
