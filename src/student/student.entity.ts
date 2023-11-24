@@ -113,4 +113,16 @@ export class Student extends BaseEntity implements CreateStudentDto {
 		nullable: true,
 	})
 	courses: string;
+
+	@Column({
+		type: "text",
+		nullable: true,
+	})
+	userId: string;
+
+	@Column({
+		type: "text",
+		nullable: true,
+	})
+	status: string;
 }
