@@ -13,7 +13,7 @@ export class UserController {
 	}
 
 	@Post("/register")
-	addUser(@Body() newUser: CreateUserDto) {
-		return this.userService.addUser(newUser);
+	createUser(@Body() newUser: CreateUserDto) {
+		return this.userService.createUser(newUser);
 	}
 }

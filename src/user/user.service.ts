@@ -8,9 +8,14 @@ export class UserService {
 		return await UserEntity.findOne({ where: { id: id } });
 	}
 
-	async addUser(newUser: CreateUserDto): Promise<UserEntity> {
+	async createUser(newUser: CreateUserDto): Promise<UserEntity> {
 		const user = new UserEntity();
 		user.email = newUser.email;
+		user.pwdHash = newUser.pwdHash;
+		user.currentTokenId = newUser.currentTokenId;
+		user.activeTokenId = newUser.activeTokenId;
+		user.active = newUser.active;
+		user.role = newUser.role;
 		await user.save();
 		return user;
 	}
