@@ -7,14 +7,14 @@ export class Student extends BaseEntity implements CreateStudentDto {
 	id: string;
 
 	@Column({
-		type: "text",
+		type: "varchar",
 		unique: true,
 		nullable: false,
 	})
 	email: string;
 
 	@Column({
-		type: "text",
+		type: "varchar",
 		unique: true,
 		nullable: true,
 	})
@@ -80,19 +80,19 @@ export class Student extends BaseEntity implements CreateStudentDto {
 
 	@Column({
 		type: "text",
-		default: "0",
+		default: null,
 	})
 	expectedSalary: string;
 
 	@Column({
 		type: "text",
-		default: "nie",
+		default: null,
 	})
 	canTakeApprenticeship: string;
 
 	@Column({
 		type: "int",
-		default: 0,
+		default: null,
 	})
 	monthsOfCommercialExp: number;
 
