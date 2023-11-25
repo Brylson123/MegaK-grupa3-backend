@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { AuthLoginDto } from "./dto/auth-login.dto";
 import { hashPwd } from "../utils/hash-pwd";
-import { User } from "../user/user.entity";
 import { Response } from "express";
 import { v4 as uuid } from "uuid";
 import { sign } from "jsonwebtoken";
 import { JwtPayload } from "./jwt.strategy";
+import { UserEntity } from "../user/user.entity";
 
 @Injectable()
 export class AuthService {
@@ -26,12 +26,12 @@ export class AuthService {
 		};
 	}
 
-	private async generateToken(user: User): Promise<string> {
+	private async generateToken(user: UserEntity): Promise<string> {
 		let token;
 		let userWithThisToken = null;
 		do {
 			token = uuid();
-			userWithThisToken = await User.findOneBy({ currentTokenId: token });
+			userWithThisToken = await UserEntity.findOneBy({ currentTokenId: token });
 		} while (!!userWithThisToken);
 		user.currentTokenId = token;
 		await user.save();
@@ -40,7 +40,7 @@ export class AuthService {
 
 	async login(req: AuthLoginDto, res: Response): Promise<any> {
 		try {
-			const user = await User.findOneBy({
+			const user = await UserEntity.findOneBy({
 				email: req.email,
 				pwdHash: hashPwd(req.pwd),
 			});
@@ -60,7 +60,7 @@ export class AuthService {
 			return res.json({ error: e.message });
 		}
 	}
-	async logout(user: User, res: Response): Promise<any> {
+	async logout(user: UserEntity, res: Response): Promise<any> {
 		try {
 			user.currentTokenId = null;
 			await user.save();
