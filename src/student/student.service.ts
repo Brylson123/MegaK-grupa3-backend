@@ -6,23 +6,20 @@ import { Repository } from "typeorm";
 
 @Injectable()
 export class StudentService {
-	constructor(@Inject('STUDENT_REPOSITORY')
-         private studentRepo: Repository<Student>) {}
-
 	async findAll() {
-		return await this.studentRepo.find();
+		return await Student.find();
 	}
 
 	async findOne(id: string) {
-		return await this.studentRepo.findOne({ where: { id: id } });
+		return await Student.findOne({ where: { id: id } });
 	}
 
 	async createStudent(createStudentDto: CreateStudentDto) {
-        const student = await this.studentRepo.create(createStudentDto)
-		return await this.studentRepo.save(student);
+        const student = await Student.create(createStudentDto)
+		return await student.save();
 	}
 
 	async updateStudent(id: string, updateStudentDto: UpdateStudentDto) {
-		return await this.studentRepo.update(id, updateStudentDto);
+		return await Student.update(id, updateStudentDto);
 	}
 }

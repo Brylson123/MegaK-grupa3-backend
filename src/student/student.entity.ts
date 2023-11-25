@@ -1,8 +1,12 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CreateStudentDto } from "./dto/createStudentDto";
+import { IsString } from "class-validator";
+import { ExpectedContractType, ExpectedTypeWork, StudentInterface } from "src/types";
+import { PortfolioUrl } from "./portfolioUrl.entity";
+import { ProjectUrl } from "./projectUrl.entity";
 
 @Entity()
-export class Student extends BaseEntity implements CreateStudentDto {
+export class Student extends BaseEntity implements StudentInterface {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
@@ -21,108 +25,128 @@ export class Student extends BaseEntity implements CreateStudentDto {
 	tel: string;
 
 	@Column({
-		type: "text",
+		type: "varchar",
 		nullable: false,
 	})
 	firstName: string;
 
 	@Column({
-		type: "text",
+		type: "varchar",
 		nullable: false,
 	})
 	lastName: string;
 
 	@Column({
-		type: "text",
+		type: "tinyint",
+		nullable: true,
+	})
+	courseCompletion: string;
+
+	@Column({
+		type: "tinyint",
+		nullable: true,
+	})
+	courseEngagment: string;
+
+	@Column({
+		type: "tinyint",
+		nullable: true,
+	})
+	projectDegree: string;
+
+	@Column({
+		type: "tinyint",
+		nullable: true,
+	})
+	teamProjectDegree: string;
+
+	@Column({
+		type: "varchar",
 		nullable: false,
 	})
 	@Column({
-		type: "text",
+		type: "varchar",
 		nullable: true,
 	})
 	gitHubUserName: string;
 
 	@Column({
-		type: "simple-array",
-		nullable: true,
-	})
-	portfolioUrls: string[];
-
-	@Column({
-		type: "simple-array",
-		nullable: true,
-	})
-	projectUrls: string[];
-
-	@Column({
-		type: "text",
+		type: "varchar",
 		nullable: false,
 	})
 	bio: string;
 
 	@Column({
-		type: "text",
-		nullable: false,
+		type: "varchar",
+		default: ExpectedTypeWork.NOT_IMPORTANT,
 	})
-	expectedTypeWork: string;
+	expectedTypeWork: ExpectedTypeWork;
 
 	@Column({
-		type: "text",
+		type: "varchar",
 		nullable: true,
 	})
 	targetWorkCity: string;
 
 	@Column({
-		type: "text",
-		nullable: true,
+		type: "varchar",
+		default: ExpectedContractType.NOT_IMPORTANT
 	})
-	expectedContractType: string;
+	expectedContractType: ExpectedContractType;
 
 	@Column({
-		type: "text",
+		type: "varchar",
 		default: null,
 	})
 	expectedSalary: string;
 
 	@Column({
-		type: "text",
+		type: "varchar",
 		default: null,
 	})
 	canTakeApprenticeship: string;
 
 	@Column({
-		type: "int",
-		default: null,
+		type: "tinyint",
+		default: 0,
 	})
 	monthsOfCommercialExp: number;
 
 	@Column({
-		type: "longtext",
+		type: "text",
 		nullable: true,
 	})
 	education: string;
 
 	@Column({
-		type: "longtext",
+		type: "text",
 		nullable: true,
 	})
 	workExperience: string;
 
 	@Column({
-		type: "longtext",
+		type: "text",
 		nullable: true,
 	})
 	courses: string;
 
 	@Column({
-		type: "text",
+		type: "varchar",
 		nullable: true,
 	})
 	userId: string;
 
 	@Column({
-		type: "text",
+		type: "varchar",
 		nullable: true,
 	})
 	status: string;
+
+	@OneToOne(() => PortfolioUrl)
+	@JoinColumn()
+	portfolioUrl: PortfolioUrl;
+
+	@OneToOne(() => ProjectUrl)
+	@JoinColumn()
+	projectUrl: ProjectUrl;
 }

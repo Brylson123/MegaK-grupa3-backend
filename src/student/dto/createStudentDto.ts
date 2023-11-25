@@ -1,5 +1,8 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { IsArray, IsBoolean, IsEmail, IsNumber, IsNumberString, IsString, IsUUID } from "class-validator";
+import { IsArray, IsBoolean, IsEmail, IsEnum, IsNumber, IsNumberString, IsOptional, IsString, IsUUID, IsUrl, isEnum } from "class-validator";
+import { ExpectedContractType, ExpectedTypeWork } from "../../types";
+import { PortfolioUrl } from "../portfolioUrl.entity";
+import { ProjectUrl } from "../projectUrl.entity";
 
 export class CreateStudentDto {
     @IsEmail()
@@ -15,51 +18,68 @@ export class CreateStudentDto {
     lastName: string;
 
     @IsString()
+	courseCompletion: string;
+
+	@IsString()
+	courseEngagment: string;
+
+	@IsString()
+	projectDegree: string;
+
+	@IsString()
+	teamProjectDegree: string;
+
+    @IsString()
     gitHubUserName: string;
     //TODO check if this is correct gitHubUserName
 
-    @IsArray()
-    portfolioUrls: string[];
+    @IsOptional()
+    @IsUrl()
+    portfolioUrls: PortfolioUrl;
     //TODO check if this is URL
 
-    @IsArray()
-    projectUrls: string[];
+    @IsOptional()
+    @IsUrl()
+    projectUrls: ProjectUrl;
 
     @IsString()
     bio: string;
 
-    @IsString()
-    expectedTypeWork: string;
+    @IsOptional()
+    @IsEnum(ExpectedTypeWork)
+    expectedTypeWork: ExpectedTypeWork;
 
+    @IsOptional()
     @IsString()
     targetWorkCity: string;
 
-    @IsString()
-    expectedContractType: string;
+    @IsOptional()
+    @IsEnum(ExpectedContractType)
+    expectedContractType: ExpectedContractType;
 
+    @IsOptional()
     @IsString()
     expectedSalary: string;
 
+    @IsOptional()
     @IsString()
     canTakeApprenticeship: string;
 
+    @IsOptional()
     @IsNumber()
     monthsOfCommercialExp: number;
 
+    @IsOptional()
     @IsString()
     education: string;
 
+    @IsOptional()
     @IsString()
     workExperience: string;
 
+    @IsOptional()
     @IsString()
     courses: string;
-
-    @IsString()
-    userId: string;
-
-    @IsString()
-    status: string;
 }
 
 export class UpdateStudentDto extends PartialType(CreateStudentDto) {}
