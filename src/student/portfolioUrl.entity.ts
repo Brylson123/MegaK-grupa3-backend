@@ -1,4 +1,4 @@
-import { PortfolioUrlInterface } from "src/types";
+import { PortfolioUrlInterface } from "../types";
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()

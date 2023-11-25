@@ -1,4 +1,4 @@
-import { ProjectUrlInterface } from "src/types/student/projectUrl";
+import { ProjectUrlInterface } from "../types/student/projectUrl";
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity()

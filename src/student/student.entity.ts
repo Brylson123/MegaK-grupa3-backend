@@ -1,7 +1,5 @@
 import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { CreateStudentDto } from "./dto/createStudentDto";
-import { IsString } from "class-validator";
-import { ExpectedContractType, ExpectedTypeWork, StudentInterface } from "src/types";
+import { ExpectedContractType, ExpectedTypeWork, StudentInterface } from "../types";
 import { PortfolioUrl } from "./portfolioUrl.entity";
 import { ProjectUrl } from "./projectUrl.entity";
 

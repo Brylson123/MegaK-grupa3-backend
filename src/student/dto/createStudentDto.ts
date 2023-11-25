@@ -1,85 +1,104 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { IsArray, IsBoolean, IsEmail, IsEnum, IsNumber, IsNumberString, IsOptional, IsString, IsUUID, IsUrl, isEnum } from "class-validator";
+import {
+	IsArray,
+	IsBoolean,
+	IsEmail,
+	IsEnum,
+	IsNumber,
+	IsNumberString,
+	IsOptional,
+	IsString,
+	IsUUID,
+	IsUrl,
+	isEnum,
+} from "class-validator";
 import { ExpectedContractType, ExpectedTypeWork } from "../../types";
 import { PortfolioUrl } from "../portfolioUrl.entity";
 import { ProjectUrl } from "../projectUrl.entity";
 
 export class CreateStudentDto {
-    @IsEmail()
-    email: string;
+	@IsEmail()
+	email: string;
 
-    @IsNumberString()
-    tel: string;
+	@IsOptional()
+	@IsNumberString()
+	tel: string;
 
-    @IsString()
-    firstName: string;
+	@IsString()
+	firstName: string;
 
-    @IsString()
-    lastName: string;
+	@IsString()
+	lastName: string;
 
-    @IsString()
+	@IsOptional()
+	@IsString()
 	courseCompletion: string;
 
+	@IsOptional()
 	@IsString()
 	courseEngagment: string;
 
+	@IsOptional()
 	@IsString()
 	projectDegree: string;
 
+	@IsOptional()
 	@IsString()
 	teamProjectDegree: string;
 
-    @IsString()
-    gitHubUserName: string;
-    //TODO check if this is correct gitHubUserName
+	@IsOptional()
+	@IsString()
+	gitHubUserName: string;
+	//TODO check if this is correct gitHubUserName
 
-    @IsOptional()
-    @IsUrl()
-    portfolioUrls: PortfolioUrl;
-    //TODO check if this is URL
+	@IsOptional()
+	@IsUrl()
+	portfolioUrls: PortfolioUrl;
+	//TODO check if this is URL
 
-    @IsOptional()
-    @IsUrl()
-    projectUrls: ProjectUrl;
+	@IsOptional()
+	@IsUrl()
+	projectUrls: ProjectUrl;
 
-    @IsString()
-    bio: string;
+	@IsOptional()
+	@IsString()
+	bio: string;
 
-    @IsOptional()
-    @IsEnum(ExpectedTypeWork)
-    expectedTypeWork: ExpectedTypeWork;
+	@IsOptional()
+	@IsEnum(ExpectedTypeWork)
+	expectedTypeWork: ExpectedTypeWork;
 
-    @IsOptional()
-    @IsString()
-    targetWorkCity: string;
+	@IsOptional()
+	@IsString()
+	targetWorkCity: string;
 
-    @IsOptional()
-    @IsEnum(ExpectedContractType)
-    expectedContractType: ExpectedContractType;
+	@IsOptional()
+	@IsEnum(ExpectedContractType)
+	expectedContractType: ExpectedContractType;
 
-    @IsOptional()
-    @IsString()
-    expectedSalary: string;
+	@IsOptional()
+	@IsString()
+	expectedSalary: string;
 
-    @IsOptional()
-    @IsString()
-    canTakeApprenticeship: string;
+	@IsOptional()
+	@IsString()
+	canTakeApprenticeship: string;
 
-    @IsOptional()
-    @IsNumber()
-    monthsOfCommercialExp: number;
+	@IsOptional()
+	@IsNumber()
+	monthsOfCommercialExp: number;
 
-    @IsOptional()
-    @IsString()
-    education: string;
+	@IsOptional()
+	@IsString()
+	education: string;
 
-    @IsOptional()
-    @IsString()
-    workExperience: string;
+	@IsOptional()
+	@IsString()
+	workExperience: string;
 
-    @IsOptional()
-    @IsString()
-    courses: string;
+	@IsOptional()
+	@IsString()
+	courses: string;
 }
 
 export class UpdateStudentDto extends PartialType(CreateStudentDto) {}
