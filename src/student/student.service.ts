@@ -3,8 +3,6 @@ import { CreateStudentDto, UpdateStudentDto } from "./dto/createStudentDto";
 import { Student } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
 import { ProjectUrl } from "./entities/projectUrl.entity";
-import { InjectDataSource } from "@nestjs/typeorm";
-import { DataSource } from "typeorm";
 import { PortfolioUrl } from "./entities/portfolioUrl.entity";
 
 @Injectable()
@@ -137,3 +135,4 @@ export class StudentService {
 		}
 	}
 }
+
