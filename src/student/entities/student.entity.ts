@@ -1,8 +1,17 @@
-import { BaseEntity, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+	BaseEntity,
+	Column,
+	Entity,
+	JoinColumn,
+	JoinTable,
+	OneToMany,
+	PrimaryGeneratedColumn,
+} from "typeorm";
 import { ExpectedContractType, ExpectedTypeWork, StudentInterface } from "../../types";
 import { PortfolioUrl } from "./portfolioUrl.entity";
 import { ProjectUrl } from "./projectUrl.entity";
 import { BonusProjectUrl } from "./bonusProjectUrls.entity";
+import { HrStudentEntity } from "../../hr/entities/hr.student.entity";
 
 @Entity()
 export class Student extends BaseEntity implements StudentInterface {
@@ -146,4 +155,10 @@ export class Student extends BaseEntity implements StudentInterface {
 		onUpdate: "CASCADE",
 	})
 	bonusProjectUrls: BonusProjectUrl[];
+
+	@OneToMany(() => HrStudentEntity, (entity) => entity.student, {
+		onDelete: "CASCADE",
+	})
+	@JoinColumn()
+	hrs: HrStudentEntity[];
 }

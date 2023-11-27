@@ -112,7 +112,7 @@ export class StudentService {
 			if (updateStudentDto.projectUrls.length > 0) {
 				await ProjectUrl.remove(student.projectUrls);
 				updateStudentDto.projectUrls.forEach((url) => {
-					let projectUrl = new ProjectUrl();
+					const projectUrl = new ProjectUrl();
 					projectUrl.student = student;
 					projectUrl.projectUrl = url;
 					projectUrl.save();
@@ -122,7 +122,7 @@ export class StudentService {
 			if (updateStudentDto.bonusProjectUrls) {
 				await BonusProjectUrl.remove(student.bonusProjectUrls);
 				updateStudentDto.bonusProjectUrls.forEach((url) => {
-					let bonusProjectUrl = new BonusProjectUrl();
+					const bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
 					bonusProjectUrl.save();
@@ -132,7 +132,7 @@ export class StudentService {
 			if (updateStudentDto.portfolioUrls) {
 				await PortfolioUrl.remove(student.portfolioUrls);
 				updateStudentDto.portfolioUrls.forEach((url) => {
-					let portfolioUrl = new PortfolioUrl();
+					const portfolioUrl = new PortfolioUrl();
 					portfolioUrl.student = student;
 					portfolioUrl.portfolioUrl = url;
 					portfolioUrl.save();
