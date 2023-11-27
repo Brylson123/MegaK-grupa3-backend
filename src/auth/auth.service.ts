@@ -5,7 +5,7 @@ import { Response } from "express";
 import { v4 as uuid } from "uuid";
 import { sign } from "jsonwebtoken";
 import { JwtPayload } from "./jwt.strategy";
-import { UserEntity } from "../user/user.entity";
+import { UserEntity } from "../user/entity/user.entity";
 
 @Injectable()
 export class AuthService {
@@ -60,6 +60,7 @@ export class AuthService {
 			return res.json({ error: e.message });
 		}
 	}
+
 	async logout(user: UserEntity, res: Response): Promise<any> {
 		try {
 			user.currentTokenId = null;
