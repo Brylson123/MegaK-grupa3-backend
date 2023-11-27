@@ -17,7 +17,7 @@ import { PortfolioUrl } from "./portfolioUrl.entity";
 import { ProjectUrl } from "./projectUrl.entity";
 import { BonusProjectUrl } from "./bonusProjectUrls.entity";
 import { HrStudentEntity } from "../../hr/entities/hr.student.entity";
-import { UserEntity } from "../../user/user.entity";
+import { UserEntity } from "../../user/entity/user.entity";
 
 @Entity()
 export class StudentEntity extends BaseEntity implements StudentInterface {
