@@ -1,6 +1,6 @@
 import { PortfolioUrlInterface } from "../../types";
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Student } from "./student.entity";
+import { StudentEntity } from "./student.entity";
 
 @Entity()
 export class PortfolioUrl extends BaseEntity implements PortfolioUrlInterface {
@@ -12,7 +12,7 @@ export class PortfolioUrl extends BaseEntity implements PortfolioUrlInterface {
 	})
 	portfolioUrl: string;
 
-	@ManyToOne(() => Student, (student) => student.portfolioUrls)
+	@ManyToOne(() => StudentEntity, (student) => student.portfolioUrls)
 	@JoinColumn()
-	student: Student;
+	student: StudentEntity;
 }

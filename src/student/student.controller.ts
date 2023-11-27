@@ -1,19 +1,19 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { StudentService } from "./student.service";
 import { CreateStudentDto, UpdateStudentDto } from "./dto/createStudentDto";
-import { Student } from "./entities/student.entity";
+import { StudentEntity } from "./entities/student.entity";
 
 @Controller("student")
 export class StudentController {
 	constructor(private studentService: StudentService) {}
 
 	@Get(":id")
-	findOne(@Param("id") id: string): Promise<Student> {
+	findOne(@Param("id") id: string): Promise<StudentEntity> {
 		return this.studentService.findOne(id);
 	}
 
 	@Get()
-	findAll(): Promise<Student[]> {
+	findAll(): Promise<StudentEntity[]> {
 		return this.studentService.findAll();
 	}
 
@@ -29,6 +29,6 @@ export class StudentController {
 
 	@Delete(":id")
 	deleteStudent(@Param("id") id: string) {
-		return this.studentService.deleteStudent(id);	
+		return this.studentService.deleteStudent(id);
 	}
 }
