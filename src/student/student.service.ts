@@ -4,6 +4,7 @@ import { Student } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
 import { ProjectUrl } from "./entities/projectUrl.entity";
 import { PortfolioUrl } from "./entities/portfolioUrl.entity";
+import { In } from "typeorm";
 
 @Injectable()
 export class StudentService {
@@ -83,7 +84,14 @@ export class StudentService {
 	}
 
 	async updateStudent(id: string, updateStudentDto: UpdateStudentDto) {
-		const student = await Student.findOne({ where: { id: id } });
+		const student = await Student.findOne({ 
+			where: { id: id },
+			relations: [
+				"projectUrls",
+				"portfolioUrls",
+				"bonusProjectUrls",
+			]
+		});
 		try {
 			student.bio = updateStudentDto.bio;
 			student.canTakeApprenticeship = updateStudentDto.canTakeApprenticeship;
@@ -106,23 +114,28 @@ export class StudentService {
 			student.workExperience = updateStudentDto.workExperience;
 			await student.save();
 			if (updateStudentDto.projectUrls.length > 0) {
-				updateStudentDto.projectUrls.forEach(url => {
+				await ProjectUrl.remove(student.projectUrls);
+				await updateStudentDto.projectUrls.forEach(url => {
 					let projectUrl = new ProjectUrl();
 					projectUrl.student = student;
 					projectUrl.projectUrl = url;
 					projectUrl.save();
 				});
 			}
+			await BonusProjectUrl.remove(student.bonusProjectUrls);
 			if (updateStudentDto.bonusProjectUrls) {
-				updateStudentDto.bonusProjectUrls.forEach(url => {
+				await BonusProjectUrl.remove(student.bonusProjectUrls);
+				await updateStudentDto.bonusProjectUrls.forEach(url => {
 					let bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
 					bonusProjectUrl.save();
 				});
 			}
+			await PortfolioUrl.remove(student.portfolioUrls);
 			if (updateStudentDto.portfolioUrls) {
-				updateStudentDto.portfolioUrls.forEach(url => {
+				await PortfolioUrl.remove(student.portfolioUrls);
+				await updateStudentDto.portfolioUrls.forEach(url => {
 					let portfolioUrl = new PortfolioUrl();
 					portfolioUrl.student = student;
 					portfolioUrl.portfolioUrl = url;
@@ -130,6 +143,15 @@ export class StudentService {
 				});
 			}
 			return `Entity id: ${id} updated.`;
+		} catch (e) {
+			return e;
+		}
+	}
+
+	async deleteStudent(id: string) {
+		try {
+			await Student.delete(id);
+			return `Student id: ${id} has been deleted.`
 		} catch (e) {
 			return e;
 		}
