@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { UserEntity } from "./user.entity";
+import { UserEntity } from "./entity/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 
 @Injectable()
@@ -12,6 +12,7 @@ export class UserService {
 		const user = new UserEntity();
 		user.email = newUser.email;
 		user.pwdHash = newUser.pwdHash;
+		user.salt = newUser.salt;
 		user.currentTokenId = newUser.currentTokenId;
 		user.activeTokenId = newUser.activeTokenId;
 		user.active = newUser.active;
