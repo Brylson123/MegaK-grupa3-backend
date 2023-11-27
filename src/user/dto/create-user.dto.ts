@@ -10,6 +10,10 @@ export class CreateUserDto {
 	@IsString()
 	pwdHash: string;
 
+	@IsNotEmpty()
+	@IsString()
+	salt: string;
+
 	@IsOptional()
 	@IsString()
 	currentTokenId: string | null;
