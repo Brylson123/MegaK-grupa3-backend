@@ -1,3 +1,3 @@
 export interface ProjectUrlInterface {
-    projectUrl: string | null;
+	projectUrl: string | null;
 }

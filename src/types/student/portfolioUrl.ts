@@ -1,3 +1,3 @@
 export interface PortfolioUrlInterface {
-    portfolioUrl: string | null;
+	portfolioUrl: string | null;
 }

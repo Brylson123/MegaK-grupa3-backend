@@ -14,18 +14,18 @@ export class StudentService {
 				projectUrls: true,
 				bonusProjectUrls: true,
 				portfolioUrls: true,
-			},		
+			},
 		});
 	}
 
 	async findOne(id: string) {
-		return await Student.findOne({ 
+		return await Student.findOne({
 			where: { id: id },
 			relations: {
 				projectUrls: true,
 				bonusProjectUrls: true,
 				portfolioUrls: true,
-			}, 
+			},
 		});
 	}
 
@@ -53,24 +53,24 @@ export class StudentService {
 			student.workExperience = createStudentDto.workExperience;
 			await student.save();
 			if (createStudentDto.projectUrls.length > 0) {
-				createStudentDto.projectUrls.forEach(url => {
-					let projectUrl = new ProjectUrl();
+				createStudentDto.projectUrls.forEach((url) => {
+					const projectUrl = new ProjectUrl();
 					projectUrl.student = student;
 					projectUrl.projectUrl = url;
 					projectUrl.save();
-				});		
+				});
 			}
 			if (createStudentDto.bonusProjectUrls.length > 0) {
-				createStudentDto.bonusProjectUrls.forEach(url => {
-					let bonusProjectUrl = new BonusProjectUrl();
+				createStudentDto.bonusProjectUrls.forEach((url) => {
+					const bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
-					bonusProjectUrl.save()
+					bonusProjectUrl.save();
 				});
 			}
 			if (createStudentDto.portfolioUrls.length > 0) {
-				createStudentDto.portfolioUrls.forEach(url => {
-					let portfolioUrl = new PortfolioUrl();
+				createStudentDto.portfolioUrls.forEach((url) => {
+					const portfolioUrl = new PortfolioUrl();
 					portfolioUrl.student = student;
 					portfolioUrl.portfolioUrl = url;
 					portfolioUrl.save();
@@ -80,7 +80,6 @@ export class StudentService {
 		} catch (e) {
 			return e;
 		}
-
 	}
 
 	async updateStudent(id: string, updateStudentDto: UpdateStudentDto) {
@@ -113,6 +112,7 @@ export class StudentService {
 			student.tel = updateStudentDto.tel;
 			student.workExperience = updateStudentDto.workExperience;
 			await student.save();
+
 			if (updateStudentDto.projectUrls.length > 0) {
 				await ProjectUrl.remove(student.projectUrls);
 				await updateStudentDto.projectUrls.forEach(url => {
@@ -143,15 +143,6 @@ export class StudentService {
 				});
 			}
 			return `Entity id: ${id} updated.`;
-		} catch (e) {
-			return e;
-		}
-	}
-
-	async deleteStudent(id: string) {
-		try {
-			await Student.delete(id);
-			return `Student id: ${id} has been deleted.`
 		} catch (e) {
 			return e;
 		}
