@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { HrInterface, StudentInterface, UserInterface, UserRole } from "../../types";
+import { UserInterface, UserRole } from "../../types";
 import { StudentEntity } from "../../student/entities/student.entity";
 import { HrEntity } from "../../hr/entities/hr.entity";
 
