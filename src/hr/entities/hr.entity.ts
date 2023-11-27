@@ -7,7 +7,7 @@ import {
 	OneToOne,
 	PrimaryGeneratedColumn,
 } from "typeorm";
-import { HrInterface, HrToStudentInterface, UserInterface } from "../../types";
+import { HrInterface, HrToStudentInterface } from "../../types";
 import { HrStudentEntity } from "./hr.student.entity";
 import { UserEntity } from "../../user/entity/user.entity";
 
