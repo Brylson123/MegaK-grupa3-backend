@@ -4,6 +4,7 @@ import { Student } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
 import { ProjectUrl } from "./entities/projectUrl.entity";
 import { PortfolioUrl } from "./entities/portfolioUrl.entity";
+import { In } from "typeorm";
 
 @Injectable()
 export class StudentService {
@@ -82,7 +83,14 @@ export class StudentService {
 	}
 
 	async updateStudent(id: string, updateStudentDto: UpdateStudentDto) {
-		const student = await Student.findOne({ where: { id: id }, relations: ["projectUrls"] });
+		const student = await Student.findOne({ 
+			where: { id: id },
+			relations: [
+				"projectUrls",
+				"portfolioUrls",
+				"bonusProjectUrls",
+			]
+		});
 		try {
 			student.bio = updateStudentDto.bio;
 			student.canTakeApprenticeship = updateStudentDto.canTakeApprenticeship;
@@ -107,25 +115,28 @@ export class StudentService {
 
 			if (updateStudentDto.projectUrls.length > 0) {
 				await ProjectUrl.remove(student.projectUrls);
-				updateStudentDto.projectUrls.forEach((url) => {
-					const projectUrl = new ProjectUrl();
+				await updateStudentDto.projectUrls.forEach(url => {
+					let projectUrl = new ProjectUrl();
 					projectUrl.student = student;
 					projectUrl.projectUrl = url;
 					projectUrl.save();
 				});
 			}
+			await BonusProjectUrl.remove(student.bonusProjectUrls);
 			if (updateStudentDto.bonusProjectUrls) {
-				updateStudentDto.bonusProjectUrls.forEach((url) => {
-					const bonusProjectUrl = new BonusProjectUrl();
+				await BonusProjectUrl.remove(student.bonusProjectUrls);
+				await updateStudentDto.bonusProjectUrls.forEach(url => {
+					let bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
 					bonusProjectUrl.save();
 				});
 			}
-
+			await PortfolioUrl.remove(student.portfolioUrls);
 			if (updateStudentDto.portfolioUrls) {
-				updateStudentDto.portfolioUrls.forEach((url) => {
-					const portfolioUrl = new PortfolioUrl();
+				await PortfolioUrl.remove(student.portfolioUrls);
+				await updateStudentDto.portfolioUrls.forEach(url => {
+					let portfolioUrl = new PortfolioUrl();
 					portfolioUrl.student = student;
 					portfolioUrl.portfolioUrl = url;
 					portfolioUrl.save();
@@ -137,3 +148,4 @@ export class StudentService {
 		}
 	}
 }
+
