@@ -33,7 +33,8 @@ export class StudentService {
 	}
 
 	async createStudent(createStudentDto: CreateStudentDto) {
-		const student = new StudentEntity();``
+		const student = new StudentEntity();
+		``;
 		try {
 			student.bio = createStudentDto.bio;
 			student.canTakeApprenticeship = createStudentDto.canTakeApprenticeship;
@@ -57,18 +58,18 @@ export class StudentService {
 			await student.save();
 
 			if (!!createStudentDto.bonusProjectUrls) {
-				createStudentDto.bonusProjectUrls.forEach(async (url) => {
+				for (const url of createStudentDto.bonusProjectUrls) {
 					const bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
 					await bonusProjectUrl.save();
 					console.log("podano url");
-				});
-			} 
+				}
+			}
 			return student.id;
 		} catch (e) {
 			return e;
-		} 
+		}
 	}
 
 	async updateStudent(id: string, updateStudentDto: UpdateStudentDto) {
