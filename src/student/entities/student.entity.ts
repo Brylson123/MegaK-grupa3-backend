@@ -1,19 +1,13 @@
-import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { ExpectedContractType, ExpectedTypeWork, StudentInterface } from "../types";
+import { BaseEntity, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ExpectedContractType, ExpectedTypeWork, StudentInterface } from "../../types";
 import { PortfolioUrl } from "./portfolioUrl.entity";
 import { ProjectUrl } from "./projectUrl.entity";
+import { BonusProjectUrl } from "./bonusProjectUrls.entity";
 
 @Entity()
 export class Student extends BaseEntity implements StudentInterface {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
-
-	@Column({
-		type: "varchar",
-		unique: true,
-		nullable: false,
-	})
-	email: string;
 
 	@Column({
 		type: "varchar",
@@ -58,10 +52,6 @@ export class Student extends BaseEntity implements StudentInterface {
 	})
 	teamProjectDegree: string;
 
-	@Column({
-		type: "varchar",
-		nullable: false,
-	})
 	@Column({
 		type: "varchar",
 		nullable: true,
@@ -132,19 +122,28 @@ export class Student extends BaseEntity implements StudentInterface {
 		type: "varchar",
 		nullable: true,
 	})
-	userId: string;
-
-	@Column({
-		type: "varchar",
-		nullable: true,
-	})
 	status: string;
 
-	@OneToOne(() => PortfolioUrl)
-	@JoinColumn()
-	portfolioUrl: PortfolioUrl;
+	@OneToMany(() => PortfolioUrl, (portfolioUrl) => portfolioUrl.student, {
+		cascade: true,
+		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
+		createForeignKeyConstraints: true,
+	})
+	portfolioUrls: PortfolioUrl[];
 
-	@OneToOne(() => ProjectUrl)
-	@JoinColumn()
-	projectUrl: ProjectUrl;
+	@OneToMany(() => ProjectUrl, (projectUrl) => projectUrl.student, {
+		cascade: true,
+		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
+		createForeignKeyConstraints: true,
+	})
+	projectUrls: ProjectUrl[];
+
+	@OneToMany(() => BonusProjectUrl, (bonusProjectUrl) => bonusProjectUrl.student, {
+		cascade: true,
+		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
+	})
+	bonusProjectUrls: BonusProjectUrl[];
 }

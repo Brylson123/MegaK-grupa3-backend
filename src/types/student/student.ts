@@ -1,8 +1,9 @@
-import { PortfolioUrl } from "src/student/portfolioUrl.entity";
-import { ProjectUrl } from "src/student/projectUrl.entity";
+import { BonusProjectUrl } from "../../student/entities/bonusProjectUrls.entity";
+import { PortfolioUrl } from "../../student/entities/portfolioUrl.entity";
+import { ProjectUrl } from "../../student/entities/projectUrl.entity";
 
 export interface StudentInterface {
-	email: string;
+	id: string;
 	tel: string | null;
 	firstName: string;
 	lastName: string;
@@ -11,8 +12,6 @@ export interface StudentInterface {
 	projectDegree: string;
 	teamProjectDegree: string;
 	gitHubUserName: string;
-	portfolioUrl: PortfolioUrl;
-	projectUrl: ProjectUrl;
 	bio: string;
 	expectedTypeWork: ExpectedTypeWork;
 	targetWorkCity: string;

@@ -1,24 +1,20 @@
 import { PartialType } from "@nestjs/mapped-types";
 import {
-	IsArray,
-	IsBoolean,
 	IsEmail,
 	IsEnum,
 	IsNumber,
 	IsNumberString,
 	IsOptional,
 	IsString,
-	IsUUID,
 	IsUrl,
-	isEnum,
 } from "class-validator";
 import { ExpectedContractType, ExpectedTypeWork } from "../../types";
-import { PortfolioUrl } from "../portfolioUrl.entity";
-import { ProjectUrl } from "../projectUrl.entity";
+import { PortfolioUrl } from "../entities/portfolioUrl.entity";
+import { ProjectUrl } from "../entities/projectUrl.entity";
+import { BonusProjectUrl } from "../entities/bonusProjectUrls.entity";
 
 export class CreateStudentDto {
-	@IsEmail()
-	email: string;
+	id: string;
 
 	@IsOptional()
 	@IsNumberString()
@@ -50,16 +46,6 @@ export class CreateStudentDto {
 	@IsString()
 	gitHubUserName: string;
 	//TODO check if this is correct gitHubUserName
-
-	@IsOptional()
-	@IsUrl()
-	portfolioUrls: PortfolioUrl;
-	//TODO check if this is URL
-
-	@IsOptional()
-	@IsUrl()
-	projectUrls: ProjectUrl;
-
 	@IsOptional()
 	@IsString()
 	bio: string;
@@ -67,38 +53,54 @@ export class CreateStudentDto {
 	@IsOptional()
 	@IsEnum(ExpectedTypeWork)
 	expectedTypeWork: ExpectedTypeWork;
-
+    
 	@IsOptional()
 	@IsString()
 	targetWorkCity: string;
-
+    
 	@IsOptional()
 	@IsEnum(ExpectedContractType)
 	expectedContractType: ExpectedContractType;
-
+    
 	@IsOptional()
 	@IsString()
 	expectedSalary: string;
-
+    
 	@IsOptional()
 	@IsString()
 	canTakeApprenticeship: string;
-
+    
 	@IsOptional()
 	@IsNumber()
 	monthsOfCommercialExp: number;
-
+    
 	@IsOptional()
 	@IsString()
 	education: string;
-
+    
 	@IsOptional()
 	@IsString()
 	workExperience: string;
-
+    
 	@IsOptional()
 	@IsString()
 	courses: string;
+
+    @IsOptional()
+    @IsString()
+    status: string;
+
+    @IsOptional()
+    // @IsUrl()
+    portfolioUrls: string[];
+    
+    @IsOptional()
+    // @IsUrl()
+    projectUrls: string[];
+    
+    @IsOptional()
+    // @IsUrl()
+    bonusProjectUrls: string[];
 }
 
 export class UpdateStudentDto extends PartialType(CreateStudentDto) {}
