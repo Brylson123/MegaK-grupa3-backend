@@ -83,13 +83,9 @@ export class StudentService {
 	}
 
 	async updateStudent(id: string, updateStudentDto: UpdateStudentDto) {
-		const student = await Student.findOne({ 
+		const student = await Student.findOne({
 			where: { id: id },
-			relations: [
-				"projectUrls",
-				"portfolioUrls",
-				"bonusProjectUrls",
-			]
+			relations: ["projectUrls", "portfolioUrls", "bonusProjectUrls"],
 		});
 		try {
 			student.bio = updateStudentDto.bio;
@@ -115,7 +111,7 @@ export class StudentService {
 
 			if (updateStudentDto.projectUrls.length > 0) {
 				await ProjectUrl.remove(student.projectUrls);
-				await updateStudentDto.projectUrls.forEach(url => {
+				updateStudentDto.projectUrls.forEach((url) => {
 					let projectUrl = new ProjectUrl();
 					projectUrl.student = student;
 					projectUrl.projectUrl = url;
@@ -125,7 +121,7 @@ export class StudentService {
 			await BonusProjectUrl.remove(student.bonusProjectUrls);
 			if (updateStudentDto.bonusProjectUrls) {
 				await BonusProjectUrl.remove(student.bonusProjectUrls);
-				await updateStudentDto.bonusProjectUrls.forEach(url => {
+				updateStudentDto.bonusProjectUrls.forEach((url) => {
 					let bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
@@ -135,7 +131,7 @@ export class StudentService {
 			await PortfolioUrl.remove(student.portfolioUrls);
 			if (updateStudentDto.portfolioUrls) {
 				await PortfolioUrl.remove(student.portfolioUrls);
-				await updateStudentDto.portfolioUrls.forEach(url => {
+				updateStudentDto.portfolioUrls.forEach((url) => {
 					let portfolioUrl = new PortfolioUrl();
 					portfolioUrl.student = student;
 					portfolioUrl.portfolioUrl = url;
@@ -147,5 +143,13 @@ export class StudentService {
 			return e;
 		}
 	}
-}
 
+	async deleteStudent(id: string) {
+		try {
+			await Student.delete(id);
+			return `Student id: ${id} has been deleted.`;
+		} catch (e) {
+			return e;
+		}
+	}
+}
