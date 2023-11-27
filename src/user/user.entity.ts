@@ -1,5 +1,7 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { UserInterface, UserRole } from "../types";
+import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { HrInterface, StudentInterface, UserInterface, UserRole } from "../types";
+import { StudentEntity } from "../student/entities/student.entity";
+import { HrEntity } from "../hr/entities/hr.entity";
 
 @Entity()
 export class UserEntity extends BaseEntity implements UserInterface {
@@ -34,4 +36,16 @@ export class UserEntity extends BaseEntity implements UserInterface {
 
 	@Column()
 	role: UserRole;
+
+	@OneToOne(() => StudentEntity, {
+		onDelete: "CASCADE",
+	})
+	@JoinColumn()
+	studentInfo: StudentInterface;
+
+	@OneToOne(() => HrEntity, {
+		onDelete: "CASCADE",
+	})
+	@JoinColumn()
+	hr: HrInterface;
 }

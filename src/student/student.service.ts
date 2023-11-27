@@ -1,15 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { CreateStudentDto, UpdateStudentDto } from "./dto/createStudentDto";
-import { Student } from "./entities/student.entity";
+import { StudentEntity } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
 import { ProjectUrl } from "./entities/projectUrl.entity";
 import { PortfolioUrl } from "./entities/portfolioUrl.entity";
-import { In } from "typeorm";
 
 @Injectable()
 export class StudentService {
 	async findAll() {
-		return await Student.find({
+		return await StudentEntity.find({
 			relations: {
 				projectUrls: true,
 				bonusProjectUrls: true,
@@ -19,7 +18,7 @@ export class StudentService {
 	}
 
 	async findOne(id: string) {
-		return await Student.findOne({
+		return await StudentEntity.findOne({
 			where: { id: id },
 			relations: {
 				projectUrls: true,
@@ -30,7 +29,7 @@ export class StudentService {
 	}
 
 	async createStudent(createStudentDto: CreateStudentDto) {
-		const student = new Student();
+		const student = new StudentEntity();
 		try {
 			student.bio = createStudentDto.bio;
 			student.canTakeApprenticeship = createStudentDto.canTakeApprenticeship;
@@ -83,7 +82,7 @@ export class StudentService {
 	}
 
 	async updateStudent(id: string, updateStudentDto: UpdateStudentDto) {
-		const student = await Student.findOne({
+		const student = await StudentEntity.findOne({
 			where: { id: id },
 			relations: ["projectUrls", "portfolioUrls", "bonusProjectUrls"],
 		});
@@ -146,7 +145,7 @@ export class StudentService {
 
 	async deleteStudent(id: string) {
 		try {
-			await Student.delete(id);
+			await StudentEntity.delete(id);
 			return `Student id: ${id} has been deleted.`;
 		} catch (e) {
 			return e;

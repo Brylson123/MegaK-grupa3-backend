@@ -1,8 +1,7 @@
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Hr } from "./hr.entity";
-
+import { HrEntity } from "./hr.entity";
 import { HrInterface } from "src/types";
-import { Student } from "../../student/entities/student.entity";
+import { StudentEntity } from "../../student/entities/student.entity";
 
 @Entity()
 export class HrStudentEntity extends BaseEntity {
@@ -15,15 +14,15 @@ export class HrStudentEntity extends BaseEntity {
 	@Column()
 	hrId: string;
 
-	@ManyToOne(() => Hr, (entity) => entity.studentInterview, {
+	@ManyToOne(() => HrEntity, (entity) => entity.studentInterview, {
 		onDelete: "CASCADE",
 	})
 	hr: HrInterface;
 
-	@ManyToOne(() => Student, (entity) => entity.hrs, {
+	@ManyToOne(() => StudentEntity, (entity) => entity.hrs, {
 		onDelete: "CASCADE",
 	})
-	student: Student;
+	student: StudentEntity;
 
 	@Column({
 		nullable: true,

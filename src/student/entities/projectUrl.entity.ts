@@ -1,6 +1,6 @@
-import { ProjectUrlInterface } from "../../types/student/projectUrl";
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Student } from "./student.entity";
+import { StudentEntity } from "./student.entity";
+import { ProjectUrlInterface } from "../../types";
 
 @Entity()
 export class ProjectUrl extends BaseEntity implements ProjectUrlInterface {
@@ -12,7 +12,7 @@ export class ProjectUrl extends BaseEntity implements ProjectUrlInterface {
 	})
 	projectUrl: string;
 
-	@ManyToOne(() => Student, (student: Student) => student.projectUrls)
+	@ManyToOne(() => StudentEntity, (student: StudentEntity) => student.projectUrls)
 	@JoinColumn({ name: "studentId" })
-	student: Student;
+	student: StudentEntity;
 }

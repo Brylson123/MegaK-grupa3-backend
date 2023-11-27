@@ -1,6 +1,6 @@
 import { BonusProjectUrlInterface } from "../../types";
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Student } from "./student.entity";
+import { StudentEntity } from "./student.entity";
 
 @Entity()
 export class BonusProjectUrl extends BaseEntity implements BonusProjectUrlInterface {
@@ -12,7 +12,7 @@ export class BonusProjectUrl extends BaseEntity implements BonusProjectUrlInterf
 	})
 	bonusProjectUrl: string;
 
-	@ManyToOne(() => Student, (student) => student.bonusProjectUrls)
+	@ManyToOne(() => StudentEntity, (student) => student.bonusProjectUrls)
 	@JoinColumn()
-	student: Student;
+	student: StudentEntity;
 }

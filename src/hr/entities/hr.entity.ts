@@ -12,7 +12,7 @@ import { HrStudentEntity } from "./hr.student.entity";
 import { UserEntity } from "../../user/user.entity";
 
 @Entity()
-export class Hr extends BaseEntity implements HrInterface {
+export class HrEntity extends BaseEntity implements HrInterface {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
