@@ -1,6 +1,5 @@
 import { PartialType } from "@nestjs/mapped-types";
 import {
-	IsEmail,
 	IsEnum,
 	IsNumber,
 	IsNumberString,
@@ -9,9 +8,6 @@ import {
 	IsUrl,
 } from "class-validator";
 import { ExpectedContractType, ExpectedTypeWork } from "../../types";
-import { PortfolioUrl } from "../entities/portfolioUrl.entity";
-import { ProjectUrl } from "../entities/projectUrl.entity";
-import { BonusProjectUrl } from "../entities/bonusProjectUrls.entity";
 
 export class CreateStudentDto {
 	id: string;

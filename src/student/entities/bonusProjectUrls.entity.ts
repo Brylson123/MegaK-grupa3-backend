@@ -9,6 +9,7 @@ export class BonusProjectUrl extends BaseEntity implements BonusProjectUrlInterf
 
 	@Column({
 		type: "varchar",
+		nullable: true,
 	})
 	bonusProjectUrl: string;
 
