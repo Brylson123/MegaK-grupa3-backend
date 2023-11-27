@@ -18,7 +18,6 @@ export class HrEntity extends BaseEntity implements HrInterface {
 
 	@Column({
 		type: "varchar",
-		unique: true,
 		nullable: true,
 	})
 	fullName: string;
