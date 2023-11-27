@@ -53,54 +53,54 @@ export class CreateStudentDto {
 	@IsOptional()
 	@IsEnum(ExpectedTypeWork)
 	expectedTypeWork: ExpectedTypeWork;
-    
+
 	@IsOptional()
 	@IsString()
 	targetWorkCity: string;
-    
+
 	@IsOptional()
 	@IsEnum(ExpectedContractType)
 	expectedContractType: ExpectedContractType;
-    
+
 	@IsOptional()
 	@IsString()
 	expectedSalary: string;
-    
+
 	@IsOptional()
 	@IsString()
 	canTakeApprenticeship: string;
-    
+
 	@IsOptional()
 	@IsNumber()
 	monthsOfCommercialExp: number;
-    
+
 	@IsOptional()
 	@IsString()
 	education: string;
-    
+
 	@IsOptional()
 	@IsString()
 	workExperience: string;
-    
+
 	@IsOptional()
 	@IsString()
 	courses: string;
 
-    @IsOptional()
-    @IsString()
-    status: string;
+	@IsOptional()
+	@IsString()
+	status: string;
 
-    @IsOptional()
-    // @IsUrl()
-    portfolioUrls: string[];
-    
-    @IsOptional()
-    // @IsUrl()
-    projectUrls: string[];
-    
-    @IsOptional()
-    // @IsUrl()
-    bonusProjectUrls: string[];
+	@IsOptional()
+	// @IsUrl()
+	portfolioUrls: string[];
+
+	@IsOptional()
+	// @IsUrl()
+	projectUrls: string[];
+
+	@IsOptional()
+	// @IsUrl()
+	bonusProjectUrls: string[];
 }
 
 export class UpdateStudentDto extends PartialType(CreateStudentDto) {}

@@ -13,18 +13,18 @@ export class StudentService {
 				projectUrls: true,
 				bonusProjectUrls: true,
 				portfolioUrls: true,
-			},		
+			},
 		});
 	}
 
 	async findOne(id: string) {
-		return await Student.findOne({ 
+		return await Student.findOne({
 			where: { id: id },
 			relations: {
 				projectUrls: true,
 				bonusProjectUrls: true,
 				portfolioUrls: true,
-			}, 
+			},
 		});
 	}
 
@@ -52,24 +52,24 @@ export class StudentService {
 			student.workExperience = createStudentDto.workExperience;
 			await student.save();
 			if (createStudentDto.projectUrls.length > 0) {
-				createStudentDto.projectUrls.forEach(url => {
-					let projectUrl = new ProjectUrl();
+				createStudentDto.projectUrls.forEach((url) => {
+					const projectUrl = new ProjectUrl();
 					projectUrl.student = student;
 					projectUrl.projectUrl = url;
 					projectUrl.save();
-				});		
+				});
 			}
 			if (createStudentDto.bonusProjectUrls.length > 0) {
-				createStudentDto.bonusProjectUrls.forEach(url => {
-					let bonusProjectUrl = new BonusProjectUrl();
+				createStudentDto.bonusProjectUrls.forEach((url) => {
+					const bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
-					bonusProjectUrl.save()
+					bonusProjectUrl.save();
 				});
 			}
 			if (createStudentDto.portfolioUrls.length > 0) {
-				createStudentDto.portfolioUrls.forEach(url => {
-					let portfolioUrl = new PortfolioUrl();
+				createStudentDto.portfolioUrls.forEach((url) => {
+					const portfolioUrl = new PortfolioUrl();
 					portfolioUrl.student = student;
 					portfolioUrl.portfolioUrl = url;
 					portfolioUrl.save();
@@ -79,11 +79,10 @@ export class StudentService {
 		} catch (e) {
 			return e;
 		}
-
 	}
 
 	async updateStudent(id: string, updateStudentDto: UpdateStudentDto) {
-		const student = await Student.findOne({ where: { id: id } });
+		const student = await Student.findOne({ where: { id: id }, relations: ["projectUrls"] });
 		try {
 			student.bio = updateStudentDto.bio;
 			student.canTakeApprenticeship = updateStudentDto.canTakeApprenticeship;
@@ -105,25 +104,28 @@ export class StudentService {
 			student.tel = updateStudentDto.tel;
 			student.workExperience = updateStudentDto.workExperience;
 			await student.save();
+
 			if (updateStudentDto.projectUrls.length > 0) {
-				updateStudentDto.projectUrls.forEach(url => {
-					let projectUrl = new ProjectUrl();
+				await ProjectUrl.remove(student.projectUrls);
+				updateStudentDto.projectUrls.forEach((url) => {
+					const projectUrl = new ProjectUrl();
 					projectUrl.student = student;
 					projectUrl.projectUrl = url;
 					projectUrl.save();
 				});
 			}
 			if (updateStudentDto.bonusProjectUrls) {
-				updateStudentDto.bonusProjectUrls.forEach(url => {
-					let bonusProjectUrl = new BonusProjectUrl();
+				updateStudentDto.bonusProjectUrls.forEach((url) => {
+					const bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
 					bonusProjectUrl.save();
 				});
 			}
+
 			if (updateStudentDto.portfolioUrls) {
-				updateStudentDto.portfolioUrls.forEach(url => {
-					let portfolioUrl = new PortfolioUrl();
+				updateStudentDto.portfolioUrls.forEach((url) => {
+					const portfolioUrl = new PortfolioUrl();
 					portfolioUrl.student = student;
 					portfolioUrl.portfolioUrl = url;
 					portfolioUrl.save();
@@ -135,4 +137,3 @@ export class StudentService {
 		}
 	}
 }
-

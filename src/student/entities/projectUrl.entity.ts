@@ -13,6 +13,6 @@ export class ProjectUrl extends BaseEntity implements ProjectUrlInterface {
 	projectUrl: string;
 
 	@ManyToOne(() => Student, (student: Student) => student.projectUrls)
-	@JoinColumn({name: 'studentId'})
+	@JoinColumn({ name: "studentId" })
 	student: Student;
 }
