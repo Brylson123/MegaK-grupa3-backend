@@ -12,7 +12,10 @@ export class PortfolioUrl extends BaseEntity implements PortfolioUrlInterface {
 	})
 	portfolioUrl: string;
 
-	@ManyToOne(() => StudentEntity, (student) => student.portfolioUrls)
+	@ManyToOne(() => StudentEntity, (student) => student.portfolioUrls, {
+		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
+	})
 	@JoinColumn()
 	student: StudentEntity;
 }

@@ -12,7 +12,10 @@ export class ProjectUrl extends BaseEntity implements ProjectUrlInterface {
 	})
 	projectUrl: string;
 
-	@ManyToOne(() => StudentEntity, (student: StudentEntity) => student.projectUrls)
+	@ManyToOne(() => StudentEntity, (student: StudentEntity) => student.projectUrls, {
+		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
+	})
 	@JoinColumn({ name: "studentId" })
 	student: StudentEntity;
 }
