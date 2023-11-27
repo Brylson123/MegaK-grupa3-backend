@@ -39,13 +39,15 @@ export class UserEntity extends BaseEntity implements UserInterface {
 
 	@OneToOne(() => StudentEntity, {
 		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
 	})
 	@JoinColumn()
-	student: StudentInterface;
+	student: StudentEntity;
 
 	@OneToOne(() => HrEntity, {
 		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
 	})
 	@JoinColumn()
-	hr: HrInterface;
+	hr: HrEntity;
 }

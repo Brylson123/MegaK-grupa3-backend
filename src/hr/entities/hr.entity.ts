@@ -36,13 +36,15 @@ export class HrEntity extends BaseEntity implements HrInterface {
 
 	@OneToMany(() => HrStudentEntity, (entity) => entity.hr, {
 		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
 	})
 	@JoinColumn()
 	studentInterview: HrToStudentInterface[];
 
 	@OneToOne(() => UserEntity, {
 		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
 	})
 	@JoinColumn()
-	user: UserInterface;
+	user: UserEntity;
 }

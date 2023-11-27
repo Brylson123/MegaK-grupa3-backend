@@ -140,23 +140,18 @@ export class StudentEntity extends BaseEntity implements StudentInterface {
 	status: string;
 
 	@OneToMany(() => PortfolioUrl, (portfolioUrl) => portfolioUrl.student, {
-		cascade: true,
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE",
-		createForeignKeyConstraints: true,
 	})
 	portfolioUrls: PortfolioUrl[];
 
 	@OneToMany(() => ProjectUrl, (projectUrl) => projectUrl.student, {
-		cascade: true,
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE",
-		createForeignKeyConstraints: true,
 	})
 	projectUrls: ProjectUrl[];
 
 	@OneToMany(() => BonusProjectUrl, (bonusProjectUrl) => bonusProjectUrl.student, {
-		cascade: true,
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE",
 	})
@@ -164,13 +159,15 @@ export class StudentEntity extends BaseEntity implements StudentInterface {
 
 	@OneToMany(() => HrStudentEntity, (entity) => entity.student, {
 		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
 	})
 	@JoinColumn()
 	hrs: HrStudentEntity[];
 
 	@OneToOne(() => UserEntity, {
 		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
 	})
 	@JoinColumn()
-	user: UserInterface;
+	user: UserEntity;
 }

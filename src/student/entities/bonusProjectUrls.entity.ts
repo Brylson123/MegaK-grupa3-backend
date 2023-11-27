@@ -12,7 +12,10 @@ export class BonusProjectUrl extends BaseEntity implements BonusProjectUrlInterf
 	})
 	bonusProjectUrl: string;
 
-	@ManyToOne(() => StudentEntity, (student) => student.bonusProjectUrls)
+	@ManyToOne(() => StudentEntity, (student) => student.bonusProjectUrls, {
+		onDelete: "CASCADE",
+		onUpdate: "CASCADE",
+	})
 	@JoinColumn()
 	student: StudentEntity;
 }

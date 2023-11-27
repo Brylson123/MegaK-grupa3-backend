@@ -13,6 +13,8 @@ export class StudentService {
 				projectUrls: true,
 				bonusProjectUrls: true,
 				portfolioUrls: true,
+				hrs: true,
+				user: true,
 			},
 		});
 	}
@@ -24,6 +26,8 @@ export class StudentService {
 				projectUrls: true,
 				bonusProjectUrls: true,
 				portfolioUrls: true,
+				hrs: true,
+				user: true,
 			},
 		});
 	}
@@ -51,14 +55,7 @@ export class StudentService {
 			student.tel = createStudentDto.tel;
 			student.workExperience = createStudentDto.workExperience;
 			await student.save();
-			if (createStudentDto.projectUrls.length > 0) {
-				createStudentDto.projectUrls.forEach((url) => {
-					const projectUrl = new ProjectUrl();
-					projectUrl.student = student;
-					projectUrl.projectUrl = url;
-					projectUrl.save();
-				});
-			}
+
 			if (createStudentDto.bonusProjectUrls.length > 0) {
 				createStudentDto.bonusProjectUrls.forEach((url) => {
 					const bonusProjectUrl = new BonusProjectUrl();
@@ -66,15 +63,7 @@ export class StudentService {
 					bonusProjectUrl.bonusProjectUrl = url;
 					bonusProjectUrl.save();
 				});
-			}
-			if (createStudentDto.portfolioUrls.length > 0) {
-				createStudentDto.portfolioUrls.forEach((url) => {
-					const portfolioUrl = new PortfolioUrl();
-					portfolioUrl.student = student;
-					portfolioUrl.portfolioUrl = url;
-					portfolioUrl.save();
-				});
-			}
+			} 
 			return student.id;
 		} catch (e) {
 			return e;
@@ -117,16 +106,16 @@ export class StudentService {
 					projectUrl.save();
 				});
 			}
-			await BonusProjectUrl.remove(student.bonusProjectUrls);
-			if (updateStudentDto.bonusProjectUrls) {
-				await BonusProjectUrl.remove(student.bonusProjectUrls);
-				updateStudentDto.bonusProjectUrls.forEach((url) => {
-					const bonusProjectUrl = new BonusProjectUrl();
-					bonusProjectUrl.student = student;
-					bonusProjectUrl.bonusProjectUrl = url;
-					bonusProjectUrl.save();
-				});
-			}
+			// await BonusProjectUrl.remove(student.bonusProjectUrls);
+			// if (updateStudentDto.bonusProjectUrls) {
+			// 	await BonusProjectUrl.remove(student.bonusProjectUrls);
+			// 	updateStudentDto.bonusProjectUrls.forEach((url) => {
+			// 		const bonusProjectUrl = new BonusProjectUrl();
+			// 		bonusProjectUrl.student = student;
+			// 		bonusProjectUrl.bonusProjectUrl = url;
+			// 		bonusProjectUrl.save();
+			// 	});
+			// }
 			await PortfolioUrl.remove(student.portfolioUrls);
 			if (updateStudentDto.portfolioUrls) {
 				await PortfolioUrl.remove(student.portfolioUrls);
