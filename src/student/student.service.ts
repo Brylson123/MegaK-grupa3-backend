@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { CreateStudentDto, UpdateStudentDto } from "./dto/createStudentDto";
 import { Student } from "./student.entity";
 
-
 @Injectable()
 export class StudentService {
 	async findAll() {
@@ -14,7 +13,7 @@ export class StudentService {
 	}
 
 	async createStudent(createStudentDto: CreateStudentDto) {
-        const student = await Student.create(createStudentDto)
+		const student = await Student.create(createStudentDto);
 		return await student.save();
 	}
 

@@ -88,7 +88,7 @@ export class Student extends BaseEntity implements StudentInterface {
 
 	@Column({
 		type: "varchar",
-		default: ExpectedContractType.NOT_IMPORTANT
+		default: ExpectedContractType.NOT_IMPORTANT,
 	})
 	expectedContractType: ExpectedContractType;
 
