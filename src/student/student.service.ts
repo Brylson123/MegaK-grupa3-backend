@@ -89,7 +89,6 @@ export class StudentService {
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
 					await bonusProjectUrl.save();
-					console.log("podano url");
 				}
 			}
 			return student.id;
@@ -114,7 +113,14 @@ export class StudentService {
 			student.expectedSalary = updateStudentDto.expectedSalary;
 			student.expectedTypeWork = updateStudentDto.expectedTypeWork;
 			student.firstName = updateStudentDto.firstName;
-			student.gitHubUserName = updateStudentDto.gitHubUserName;
+			if (!!updateStudentDto.gitHubUserName) {
+				const {isSuccess, message} = await this.findGithubAvatar(updateStudentDto.gitHubUserName);
+				if (isSuccess) {
+					student.gitHubUserName = updateStudentDto.gitHubUserName;
+				} else {
+					return message;
+				}
+			}
 			student.lastName = updateStudentDto.lastName;
 			student.monthsOfCommercialExp = updateStudentDto.monthsOfCommercialExp;
 			student.projectDegree = updateStudentDto.projectDegree;
