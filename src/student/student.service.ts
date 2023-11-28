@@ -4,9 +4,29 @@ import { StudentEntity } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
 import { ProjectUrl } from "./entities/projectUrl.entity";
 import { PortfolioUrl } from "./entities/portfolioUrl.entity";
+import { HttpService } from "@nestjs/axios";
 
 @Injectable()
 export class StudentService {
+	constructor(private readonly httpService: HttpService) {}
+
+	async findGithubAvatar(name) {
+        try {
+            const github = await this.httpService.axiosRef.get(
+                `https://api.github.com/users/${name}`,
+            );
+            return {
+                message: github.data.avatar_url || '',
+                isSuccess: true,
+            };
+        } catch (e) {
+            return {
+                isSuccess: false,
+                message: 'Nie znaleziono avatara na github.',
+            };
+        }
+    }
+
 	async findAll() {
 		return await StudentEntity.find({
 			relations: {
@@ -34,7 +54,6 @@ export class StudentService {
 
 	async createStudent(createStudentDto: CreateStudentDto) {
 		const student = new StudentEntity();
-		``;
 		try {
 			student.bio = createStudentDto.bio;
 			student.canTakeApprenticeship = createStudentDto.canTakeApprenticeship;
@@ -46,7 +65,14 @@ export class StudentService {
 			student.expectedSalary = createStudentDto.expectedSalary;
 			student.expectedTypeWork = createStudentDto.expectedTypeWork;
 			student.firstName = createStudentDto.firstName;
-			student.gitHubUserName = createStudentDto.gitHubUserName;
+			if (!!createStudentDto.gitHubUserName) {
+				const {isSuccess, message} = await this.findGithubAvatar(createStudentDto.gitHubUserName);
+				if (isSuccess) {
+					student.gitHubUserName = createStudentDto.gitHubUserName;
+				} else {
+					return message;
+				}
+			}
 			student.lastName = createStudentDto.lastName;
 			student.monthsOfCommercialExp = createStudentDto.monthsOfCommercialExp;
 			student.projectDegree = createStudentDto.projectDegree;
