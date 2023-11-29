@@ -12,9 +12,11 @@ import {
 	StudentStatus,
 	viewAllActiveStudentsResponse,
 } from "../types";
+import { HttpService } from "@nestjs/axios";
 
 @Injectable()
 export class StudentService {
+	constructor(private httpService: HttpService) {}
 	private filterAvaibleStudents = (student: StudentInterface[]): StudentAvaibleViewInterface[] => {
 		return student.map((student) => {
 			const {
@@ -49,6 +51,20 @@ export class StudentService {
 			};
 		});
 	};
+	private async findGithubAvatar(name) {
+		try {
+			const github = await this.httpService.axiosRef.get(`https://api.github.com/users/${name}`);
+			return {
+				message: github.data.avatar_url || "",
+				isSuccess: true,
+			};
+		} catch (e) {
+			return {
+				isSuccess: false,
+				message: "Nie znaleziono avatara na github.",
+			};
+		}
+	}
 
 	async viewAllActiveStudents(req: ActiveStudentsDto): Promise<viewAllActiveStudentsResponse> {
 		try {
@@ -153,7 +169,7 @@ export class StudentService {
 			student.expectedTypeWork = createStudentDto.expectedTypeWork;
 			student.firstName = createStudentDto.firstName;
 			if (!!createStudentDto.gitHubUserName) {
-				const {isSuccess, message} = await this.findGithubAvatar(createStudentDto.gitHubUserName);
+				const { isSuccess, message } = await this.findGithubAvatar(createStudentDto.gitHubUserName);
 				if (isSuccess) {
 					student.gitHubUserName = createStudentDto.gitHubUserName;
 				} else {
@@ -201,7 +217,7 @@ export class StudentService {
 			student.expectedTypeWork = updateStudentDto.expectedTypeWork;
 			student.firstName = updateStudentDto.firstName;
 			if (!!updateStudentDto.gitHubUserName) {
-				const {isSuccess, message} = await this.findGithubAvatar(updateStudentDto.gitHubUserName);
+				const { isSuccess, message } = await this.findGithubAvatar(updateStudentDto.gitHubUserName);
 				if (isSuccess) {
 					student.gitHubUserName = updateStudentDto.gitHubUserName;
 				} else {
