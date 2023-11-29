@@ -141,7 +141,6 @@ export class StudentService {
 
 	async createStudent(createStudentDto: CreateStudentDto) {
 		const student = new StudentEntity();
-		``;
 		try {
 			student.bio = createStudentDto.bio;
 			student.canTakeApprenticeship = createStudentDto.canTakeApprenticeship;
@@ -153,7 +152,14 @@ export class StudentService {
 			student.expectedSalary = createStudentDto.expectedSalary;
 			student.expectedTypeWork = createStudentDto.expectedTypeWork;
 			student.firstName = createStudentDto.firstName;
-			student.gitHubUserName = createStudentDto.gitHubUserName;
+			if (!!createStudentDto.gitHubUserName) {
+				const {isSuccess, message} = await this.findGithubAvatar(createStudentDto.gitHubUserName);
+				if (isSuccess) {
+					student.gitHubUserName = createStudentDto.gitHubUserName;
+				} else {
+					return message;
+				}
+			}
 			student.lastName = createStudentDto.lastName;
 			student.monthsOfCommercialExp = createStudentDto.monthsOfCommercialExp;
 			student.projectDegree = createStudentDto.projectDegree;
@@ -170,7 +176,6 @@ export class StudentService {
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
 					await bonusProjectUrl.save();
-					console.log("podano url");
 				}
 			}
 			return student.id;
@@ -195,7 +200,14 @@ export class StudentService {
 			student.expectedSalary = updateStudentDto.expectedSalary;
 			student.expectedTypeWork = updateStudentDto.expectedTypeWork;
 			student.firstName = updateStudentDto.firstName;
-			student.gitHubUserName = updateStudentDto.gitHubUserName;
+			if (!!updateStudentDto.gitHubUserName) {
+				const {isSuccess, message} = await this.findGithubAvatar(updateStudentDto.gitHubUserName);
+				if (isSuccess) {
+					student.gitHubUserName = updateStudentDto.gitHubUserName;
+				} else {
+					return message;
+				}
+			}
 			student.lastName = updateStudentDto.lastName;
 			student.monthsOfCommercialExp = updateStudentDto.monthsOfCommercialExp;
 			student.projectDegree = updateStudentDto.projectDegree;
