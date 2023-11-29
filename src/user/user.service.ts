@@ -5,7 +5,13 @@ import { CreateUserDto } from "./dto/create-user.dto";
 @Injectable()
 export class UserService {
 	async findOne(id: string) {
-		return await UserEntity.findOne({ where: { id: id } });
+		return await UserEntity.findOne({
+			where: { id: id },
+			relations: {
+				student: true,
+				hr: true,
+			},
+		});
 	}
 
 	async createUser(newUser: CreateUserDto): Promise<UserEntity> {
