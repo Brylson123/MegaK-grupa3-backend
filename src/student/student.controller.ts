@@ -12,11 +12,6 @@ export class StudentController {
 		return this.studentService.findOne(id);
 	}
 
-	@Get()
-	findAll(): Promise<StudentEntity[]> {
-		return this.studentService.findAll();
-	}
-
 	@Post()
 	createStudent(@Body() createStudentDto: CreateStudentDto) {
 		return this.studentService.createStudent(createStudentDto);

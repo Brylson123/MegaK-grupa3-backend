@@ -1,30 +1,53 @@
-import { BonusProjectUrl } from "../../student/entities/bonusProjectUrls.entity";
-import { PortfolioUrl } from "../../student/entities/portfolioUrl.entity";
-import { ProjectUrl } from "../../student/entities/projectUrl.entity";
-
 export interface StudentInterface {
 	id: string;
-	tel: string | null;
+	tel?: string | null;
 	firstName: string;
 	lastName: string;
-	courseCompletion: string;
-	courseEngagment: string;
-	projectDegree: string;
-	teamProjectDegree: string;
+	courseCompletion: number;
+	courseEngagement: number;
+	projectDegree: number;
+	teamProjectDegree: number;
 	gitHubUserName: string;
-	bio: string;
+	bio?: string;
 	expectedTypeWork: ExpectedTypeWork;
-	targetWorkCity: string;
-	expectedContractType: string;
-	expectedSalary: string;
+	targetWorkCity?: string;
+	expectedContractType: ExpectedContractType;
+	expectedSalary?: string;
 	canTakeApprenticeship: string;
 	monthsOfCommercialExp: number;
-	education: string | null;
+	education?: string | null;
 	workExperience: string | null;
-	courses: string | null;
+	courses?: string | null;
 	status: string;
 }
 
+export interface StudentAvaibleViewInterface {
+	studentId: string;
+	firstName: string;
+	lastName: string;
+	courseCompletion: number;
+	courseEngagement: number;
+	projectDegree: number;
+	teamProjectDegree: number;
+	expectedTypeWork: ExpectedTypeWork;
+	targetWorkCity?: string;
+	expectedContractType: ExpectedContractType;
+	expectedSalary?: string;
+	canTakeApprenticeship: string;
+	monthsOfCommercialExp: number;
+}
+export enum StudentStatus {
+	ACCESSIBLE,
+	PENDING,
+	EMPLOYED,
+}
+
+export type viewAllActiveStudentsResponse = {
+	isSuccess: boolean;
+	pageCount: number;
+	students: StudentAvaibleViewInterface[];
+	studentsCount: number;
+};
 export enum ExpectedTypeWork {
 	NOT_IMPORTANT = "Bez znaczenia",
 	LOCAL = "Na miejscu",

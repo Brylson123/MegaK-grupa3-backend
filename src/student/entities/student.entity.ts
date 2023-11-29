@@ -7,12 +7,7 @@ import {
 	OneToOne,
 	PrimaryGeneratedColumn,
 } from "typeorm";
-import {
-	ExpectedContractType,
-	ExpectedTypeWork,
-	StudentInterface,
-	UserInterface,
-} from "../../types";
+import { ExpectedContractType, ExpectedTypeWork, StudentInterface } from "../../types";
 import { PortfolioUrl } from "./portfolioUrl.entity";
 import { ProjectUrl } from "./projectUrl.entity";
 import { BonusProjectUrl } from "./bonusProjectUrls.entity";
@@ -47,35 +42,36 @@ export class StudentEntity extends BaseEntity implements StudentInterface {
 		type: "tinyint",
 		nullable: true,
 	})
-	courseCompletion: string;
+	courseCompletion: number;
 
 	@Column({
 		type: "tinyint",
 		nullable: true,
 	})
-	courseEngagment: string;
+	courseEngagement: number;
 
 	@Column({
 		type: "tinyint",
 		nullable: true,
 	})
-	projectDegree: string;
+	projectDegree: number;
 
 	@Column({
 		type: "tinyint",
 		nullable: true,
 	})
-	teamProjectDegree: string;
+	teamProjectDegree: number;
 
 	@Column({
 		type: "varchar",
 		nullable: true,
+		default: null,
 	})
 	gitHubUserName: string;
 
 	@Column({
 		type: "varchar",
-		nullable: false,
+		nullable: true,
 	})
 	bio: string;
 
@@ -99,13 +95,13 @@ export class StudentEntity extends BaseEntity implements StudentInterface {
 
 	@Column({
 		type: "varchar",
-		default: null,
+		default: "0",
 	})
 	expectedSalary: string;
 
 	@Column({
 		type: "varchar",
-		default: null,
+		default: "nie",
 	})
 	canTakeApprenticeship: string;
 
@@ -136,6 +132,7 @@ export class StudentEntity extends BaseEntity implements StudentInterface {
 	@Column({
 		type: "varchar",
 		nullable: true,
+		default: 0,
 	})
 	status: string;
 
