@@ -5,9 +5,10 @@ import { StudentService } from "src/student/student.service";
 import { UserService } from "src/user/user.service";
 import { HrService } from "src/hr/hr.service";
 import { AuthService } from "../auth/auth.service";
-import csv from "csv-parser";
+import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
 import { CreateHrResponse } from "../types";
+import { CreateStudentDto } from "src/student/dto/createStudentDto";
 
 @Injectable()
 export class AdminService {
@@ -18,7 +19,7 @@ export class AdminService {
 		private authService: AuthService,
 	) {}
 
-	parseCSV = () => {
+	parseCSV = ():CreateStudentDto[] => {
 		const csvFile = "src/data/dummyCSV.csv";
 		const results = [];
 		createReadStream(csvFile)
@@ -54,15 +55,17 @@ export class AdminService {
 				});
 			})
 			.on("end", () => {
-				console.log(results);
+				console.log("Parse csv in end ", results);
+				return results;
 			});
+			console.log("In prse CSV after end ", results);
 		return results;
 	};
 
 	async addStudents() {
-		const students = this.parseCSV(); //Nie wiem czemy to nic nie zwraca
-		console.log("In addStudents", students); //ta linijka wykonuje się przed this.parseCSV(), dlaczego?
 		try {
+		const students = this.parseCSV(); //Nie wiem czemu to nic nie zwraca
+		console.log("In addStudents", students); //ta linijka wykonuje się przed this.parseCSV(), dlaczego?
 			students.forEach(async (student) => {
 				await this.studentService.createStudent(student);
 				console.log(student);
