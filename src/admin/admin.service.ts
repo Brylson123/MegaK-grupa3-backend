@@ -9,8 +9,6 @@ import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
 import { CreateHrResponse } from "../types";
 import { CreateStudentDto } from "src/student/dto/createStudentDto";
-import { resolve } from "dns";
-import { response } from "express";
 
 @Injectable()
 export class AdminService {
@@ -21,7 +19,7 @@ export class AdminService {
 		private authService: AuthService,
 	) {}
 
-	parseCSV = ():Promise<CreateStudentDto[]> => {
+	parseCSV = (): Promise<CreateStudentDto[]> => {
 		const csvFile = "src/data/dummyCSV.csv";
 		const results = [];
 
@@ -41,7 +39,7 @@ export class AdminService {
 						skipLines: 1,
 					}),
 				)
-				.on('error', error => {
+				.on("error", (error) => {
 					reject(error);
 				})
 				.on("data", (data) => {
@@ -51,7 +49,7 @@ export class AdminService {
 					const projectDegree = data.projectDegree;
 					const teamProjectDegree = data.teamProjectDegree;
 					const bonusProjectUrls = data.bonusProjectUrls.split(";");
-	
+
 					results.push({
 						email,
 						courseCompletion,
@@ -65,17 +63,17 @@ export class AdminService {
 					resolve(results);
 					console.log("Parse csv in end ", results);
 				});
-		}) 
-	}
+		});
+	};
 
 	async addStudents() {
 		const createdStudents = [];
-		const students = await this.parseCSV(); 
+		const students = await this.parseCSV();
 		try {
-			students.forEach((student) => {
-					const studentId = this.studentService.createStudent(student)
-					createdStudents.push(studentId);
-			})
+			for (const student of students) {
+				const studentId = await this.studentService.createStudent(student);
+				createdStudents.push(studentId);
+			}
 			console.log(createdStudents);
 			return {
 				isSuccess: true,

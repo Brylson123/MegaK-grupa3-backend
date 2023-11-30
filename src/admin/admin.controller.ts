@@ -9,7 +9,7 @@ export class AdminController {
 
 	@Post("/addStudents")
 	addStudents() {
-		this.adminService.addStudents();
+		return this.adminService.addStudents();
 	}
 
 	@Post("/addHr")
