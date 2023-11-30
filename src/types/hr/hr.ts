@@ -10,12 +10,18 @@ export interface HrInterface {
 	user: UserInterface;
 }
 
-export type InsertHr = {
+export type AdminInsertHr = {
 	token: string;
 	email: string;
 	fullName: string;
 	company: string;
-	maxReservationStudent: number;
+	maxReservationStudents: number;
+};
+
+export type AdminCreateHrResponse = {
+	isSuccess: true;
+	userId: string;
+	message: string;
 };
 export interface HrToStudentInterface {
 	id: string;

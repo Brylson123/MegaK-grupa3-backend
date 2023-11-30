@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { AddStudentsDto } from "./dto/addStudentsDto";
 import { CreateHrDto } from "src/hr/dto/create-hr.dto";
-import { createReadStream, readFileSync } from "fs";
+import { createReadStream } from "fs";
 import { StudentService } from "src/student/student.service";
 import { UserService } from "src/user/user.service";
 import { HrService } from "src/hr/hr.service";
-import { CreateStudentDto } from "src/student/dto/createStudentDto";
-import { CreateUserDto } from "src/user/dto/create-user.dto";
+import { AuthService } from "../auth/auth.service";
+import csv from "csv-parser";
+import { v4 as uuid } from "uuid";
+import { CreateHrResponse } from "../types";
 
 @Injectable()
 export class AdminService {
@@ -14,13 +15,12 @@ export class AdminService {
 		private studentService: StudentService,
 		private userService: UserService,
 		private hrService: HrService,
+		private authService: AuthService,
 	) {}
 
 	parseCSV = () => {
 		const csvFile = "src/data/dummyCSV.csv";
 		const results = [];
-		const csv = require("csv-parser"); //Czy z tego można zrobić import?
-
 		createReadStream(csvFile)
 			.pipe(
 				csv({
@@ -78,8 +78,24 @@ export class AdminService {
 		}
 	}
 
-	addHr(data: CreateHrDto) {
-		throw new Error("Method not implemented.");
-		//Myśle, że trzeba przenieść dodawianie HR do admina, HR nie potrzebuje sam się dodawać.
+	async addHr(data: CreateHrDto): Promise<CreateHrResponse> {
+		const activationToken = this.authService.createToken(uuid());
+		try {
+			const response = await this.hrService.createHr({
+				...data,
+				token: activationToken.accessToken,
+			});
+			if (response.isSuccess) {
+				console.log(response);
+			}
+			return {
+				isSuccess: true,
+			};
+		} catch (e) {
+			return {
+				isSuccess: false,
+				message: e.message,
+			};
+		}
 	}
 }

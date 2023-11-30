@@ -9,7 +9,7 @@ import { UserEntity } from "../user/entity/user.entity";
 
 @Injectable()
 export class AuthService {
-	private createToken(currentTokenId: string): {
+	public createToken(currentTokenId: string): {
 		accessToken: string;
 		expiresIn: number;
 	} {
