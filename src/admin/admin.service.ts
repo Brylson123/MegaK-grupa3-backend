@@ -4,10 +4,13 @@ import { createReadStream } from "fs";
 import { StudentService } from "src/student/student.service";
 import { UserService } from "src/user/user.service";
 import { HrService } from "src/hr/hr.service";
-import { AuthService } from "../auth/auth.service";import * as csv from "csv-parser";
+import { AuthService } from "../auth/auth.service";
+import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
 import { CreateHrResponse } from "../types";
 import { CreateStudentDto } from "src/student/dto/createStudentDto";
+import { resolve } from "dns";
+import { response } from "express";
 
 @Injectable()
 export class AdminService {
@@ -18,59 +21,66 @@ export class AdminService {
 		private authService: AuthService,
 	) {}
 
-	parseCSV = ():CreateStudentDto[] => {
+	parseCSV = ():Promise<CreateStudentDto[]> => {
 		const csvFile = "src/data/dummyCSV.csv";
 		const results = [];
-		createReadStream(csvFile)
-			.pipe(
-				csv({
-					headers: [
-						"email",
-						"courseCompletion",
-						"courseEngagement",
-						"projectDegree",
-						"teamProjectDegree",
-						"bonusProjectUrls",
-					],
-					separator: ";",
-					skipLines: 1,
-				}),
-			)
-			.on("data", (data) => {
-				const email = data.email;
-				const courseCompletion = data.courseCompletion;
-				const courseEngagement = data.courseEngagement;
-				const projectDegree = data.projectDegree;
-				const teamProjectDegree = data.teamProjectDegree;
-				const bonusProjectUrls = data.bonusProjectUrls.split(";");
 
-				results.push({
-					email,
-					courseCompletion,
-					courseEngagement,
-					projectDegree,
-					teamProjectDegree,
-					bonusProjectUrls,
+		return new Promise((resolve, reject) => {
+			createReadStream(csvFile)
+				.pipe(
+					csv({
+						headers: [
+							"email",
+							"courseCompletion",
+							"courseEngagement",
+							"projectDegree",
+							"teamProjectDegree",
+							"bonusProjectUrls",
+						],
+						separator: ";",
+						skipLines: 1,
+					}),
+				)
+				.on('error', error => {
+					reject(error);
+				})
+				.on("data", (data) => {
+					const email = data.email;
+					const courseCompletion = data.courseCompletion;
+					const courseEngagement = data.courseEngagement;
+					const projectDegree = data.projectDegree;
+					const teamProjectDegree = data.teamProjectDegree;
+					const bonusProjectUrls = data.bonusProjectUrls.split(";");
+	
+					results.push({
+						email,
+						courseCompletion,
+						courseEngagement,
+						projectDegree,
+						teamProjectDegree,
+						bonusProjectUrls,
+					});
+				})
+				.on("end", () => {
+					resolve(results);
+					console.log("Parse csv in end ", results);
 				});
-			})
-			.on("end", () => {
-				console.log("Parse csv in end ", results);
-				return results;
-			});
-			console.log("In prse CSV after end ", results);
-		return results;
-	};
+		}) 
+	}
 
 	async addStudents() {
+		const createdStudents = [];
+		const students = await this.parseCSV(); 
 		try {
-		const students = this.parseCSV(); //Nie wiem czemu to nic nie zwraca
-		console.log("In addStudents", students); //ta linijka wykonuje się przed this.parseCSV(), dlaczego?
-			students.forEach(async (student) => {
-				await this.studentService.createStudent(student);
-				console.log(student);
-			}
+			students.forEach((student) => {
+					const studentId = this.studentService.createStudent(student)
+					createdStudents.push(studentId);
+			})
+			console.log(createdStudents);
 			return {
 				isSuccess: true,
+				createdStudents: createdStudents.length,
+				ids: createdStudents,
 			};
 		} catch (e) {
 			return {
