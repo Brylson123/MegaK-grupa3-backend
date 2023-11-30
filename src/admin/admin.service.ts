@@ -42,7 +42,6 @@ export class AdminService {
 					teamProjectDegree,
 					bonusProjectUrls,
 				});
-				rowResult.push(data);
 			})
 			.on("end", () => {
 				console.log(results);
