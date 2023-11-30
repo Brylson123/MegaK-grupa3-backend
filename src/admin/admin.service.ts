@@ -7,7 +7,7 @@ import { HrService } from "src/hr/hr.service";
 import { AuthService } from "../auth/auth.service";
 import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
-import { CreateHrResponse } from "../types";
+import { CreateHrResponse, CreateStudentsResponse } from "../types";
 
 @Injectable()
 export class AdminService {
@@ -59,10 +59,10 @@ export class AdminService {
 		return results;
 	};
 
-	async addStudents() {
-		const students = this.parseCSV(); //Nie wiem czemy to nic nie zwraca
-		console.log("In addStudents", students); //ta linijka wykonuje się przed this.parseCSV(), dlaczego?
+	async addStudents(): Promise<CreateStudentsResponse> {
 		try {
+			const students = this.parseCSV(); //Nie wiem czemy to nic nie zwraca
+			console.log("In addStudents", students); //ta linijka wykonuje się przed this.parseCSV(), dlaczego?
 			for (const student of students) {
 				await this.studentService.createStudent(student);
 				console.log(student);
@@ -73,7 +73,7 @@ export class AdminService {
 		} catch (e) {
 			return {
 				isSuccess: false,
-				error: e.message,
+				message: e.message,
 			};
 		}
 	}
