@@ -21,7 +21,7 @@ export interface StudentInterface {
 	status: string;
 }
 
-export interface StudentAvaibleViewInterface {
+export interface StudentsAvaibleViewInterface {
 	studentId: string;
 	firstName: string;
 	lastName: string;
@@ -36,18 +36,13 @@ export interface StudentAvaibleViewInterface {
 	canTakeApprenticeship: string;
 	monthsOfCommercialExp: number;
 }
+
 export enum StudentStatus {
 	ACCESSIBLE,
 	PENDING,
 	EMPLOYED,
 }
 
-export type viewAllActiveStudentsResponse = {
-	isSuccess: boolean;
-	pageCount: number;
-	students: StudentAvaibleViewInterface[];
-	studentsCount: number;
-};
 export enum ExpectedTypeWork {
 	NOT_IMPORTANT = "Bez znaczenia",
 	LOCAL = "Na miejscu",
@@ -62,3 +57,20 @@ export enum ExpectedContractType {
 	B2B = "Możliwe B2B",
 	UZ_UOD = "Możliwe UZ/UoD",
 }
+
+export type viewAllActiveStudentsResponse = {
+	isSuccess: boolean;
+	pageCount: number;
+	students: StudentsAvaibleViewInterface[];
+	studentsCount: number;
+};
+export interface StudentsToInterviewInterface extends StudentsAvaibleViewInterface {
+	reservationTo: Date;
+}
+
+export type StudentsToInterviewResponse = {
+	isSuccess: boolean;
+	pageCount: number;
+	students: StudentsToInterviewInterface[];
+	studentsCount: number;
+};

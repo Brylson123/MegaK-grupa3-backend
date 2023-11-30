@@ -7,17 +7,21 @@ import { PortfolioUrl } from "./entities/portfolioUrl.entity";
 import { ActiveStudentsDto } from "./dto/active-studnets.dto";
 import { config } from "../config/config-database";
 import {
-	StudentAvaibleViewInterface,
+	HrToStudentInterface,
 	StudentInterface,
+	StudentsAvaibleViewInterface,
 	StudentStatus,
+	StudentsToInterviewInterface,
 	viewAllActiveStudentsResponse,
 } from "../types";
 import { HttpService } from "@nestjs/axios";
+import { HrStudentEntity } from "../hr/entities/hr.student.entity";
+import { UserEntity } from "../user/entity/user.entity";
 
 @Injectable()
 export class StudentService {
 	constructor(private httpService: HttpService) {}
-	private filterAvaibleStudents = (student: StudentInterface[]): StudentAvaibleViewInterface[] => {
+	private filterAvaibleStudents = (student: StudentInterface[]): StudentsAvaibleViewInterface[] => {
 		return student.map((student) => {
 			const {
 				id: studentId,
@@ -48,6 +52,43 @@ export class StudentService {
 				expectedSalary,
 				canTakeApprenticeship,
 				monthsOfCommercialExp,
+			};
+		});
+	};
+	private filterStudentsToInterview = (
+		students: HrToStudentInterface[],
+	): StudentsToInterviewInterface[] => {
+		return students.map((student) => {
+			const {
+				id: studentId,
+				firstName,
+				lastName,
+				courseCompletion,
+				courseEngagement,
+				projectDegree,
+				teamProjectDegree,
+				expectedTypeWork,
+				targetWorkCity,
+				expectedContractType,
+				expectedSalary,
+				canTakeApprenticeship,
+				monthsOfCommercialExp,
+			} = student.student;
+			return {
+				studentId,
+				firstName,
+				lastName,
+				courseCompletion,
+				courseEngagement,
+				projectDegree,
+				teamProjectDegree,
+				expectedTypeWork,
+				targetWorkCity,
+				expectedContractType,
+				expectedSalary,
+				canTakeApprenticeship,
+				monthsOfCommercialExp,
+				reservationTo: student.reservationTo,
 			};
 		});
 	};
@@ -136,6 +177,87 @@ export class StudentService {
 				pageCount,
 				students: this.filterAvaibleStudents(students),
 				studentsCount: count,
+			};
+		} catch (e) {
+			throw new Error(e.message);
+		}
+	}
+
+	async findAllToInterview(req: ActiveStudentsDto, user: UserEntity) {
+		try {
+			const {
+				pageSize,
+				currentPage,
+				courseCompletion,
+				courseEngagement,
+				projectDegree,
+				teamProjectDegree,
+				expectedTypeWork,
+				expectedContractType,
+				canTakeApprenticeship,
+				monthsOfCommercialExp,
+			} = req;
+
+			const searchTerm = req.search;
+			const expectedSalaryMin = req.expectedSalaryMin.length === 0 ? "0" : req.expectedSalaryMin;
+			const expectedSalaryMax =
+				req.expectedSalaryMax.length === 0 ? "99999999" : req.expectedSalaryMax;
+
+			const [students, count] = await config
+				.getRepository(HrStudentEntity)
+				.createQueryBuilder("hrStudentEntity")
+				.leftJoinAndSelect("hrStudentEntity.student", "studentInfo")
+				.where(
+					'hrId = :hrId AND courseCompletion >= :courseCompletion AND courseEngagment >= :courseEngagment AND projectDegree >= :projectDegree AND teamProjectDegree >= :teamProjectDegree AND (canTakeApprenticeship = :canTakeApprenticeship OR canTakeApprenticeship = "Tak") AND monthsOfCommercialExp >= :monthsOfCommercialExp AND (expectedSalary BETWEEN :expectedSalaryMin AND :expectedSalaryMax OR expectedSalary IS null)',
+					{
+						hrId: user.hr.id,
+						courseCompletion,
+						courseEngagement,
+						projectDegree,
+						teamProjectDegree,
+						canTakeApprenticeship,
+						monthsOfCommercialExp,
+						expectedSalaryMin,
+						expectedSalaryMax,
+					},
+				)
+				.andWhere(
+					!expectedContractType[0]
+						? "hrId = :hr"
+						: '(expectedContractType IN (:expectedContractType) OR expectedContractType = "Bez znaczenia")',
+					{
+						hr: user.hr.id,
+						expectedContractType,
+					},
+				)
+				.andWhere(
+					!expectedTypeWork[0]
+						? "hrId = :hr"
+						: '(expectedTypeWork IN (:expectedTypeWork) OR expectedTypeWork = "Bez znaczenia" )',
+					{
+						hr: user.hr.id,
+						expectedTypeWork,
+					},
+				)
+				.andWhere(
+					searchTerm.length === 0
+						? "hrId = :hr "
+						: '(MATCH(targetWorkCity) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(expectedTypeWork) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(expectedContractType) AGAINST (":searchTerm*" IN BOOLEAN MODE)OR MATCH(firstName) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(lastName) AGAINST (":searchTerm*" IN BOOLEAN MODE))',
+					{
+						hr: user.hr.id,
+						searchTerm,
+					},
+				)
+				.skip(pageSize * (currentPage - 1))
+				.take(pageSize)
+				.getManyAndCount();
+
+			const pageCount = Math.ceil(count / pageSize);
+			return {
+				isSuccess: true,
+				pageCount,
+				studentsCount: count,
+				students: this.filterStudentsToInterview(students),
 			};
 		} catch (e) {
 			throw new Error(e.message);
