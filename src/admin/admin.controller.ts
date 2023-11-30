@@ -8,8 +8,8 @@ export class AdminController {
     constructor(private adminService: AdminService) {}
 
 	@Post("/addStudents")
-	addStudents(@Body() data: AddStudentsDto) {
-        this.adminService.addStudents(data);
+	addStudents() {
+        this.adminService.addStudents();
     }
 
     @Post("/addHr") 
