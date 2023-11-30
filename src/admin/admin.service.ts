@@ -9,14 +9,23 @@ export class AdminService {
 		const csvFile = "src/data/dummyCSV.csv";
 		console.log(csvFile);
 		const results = [];
-		const rowResult = [];
 		const csv = require("csv-parser"); //Czy z tego można zrobić import?
 
 		createReadStream(csvFile)
-			.pipe(csv({ 
-                Headers: ['email', 'courseCompletion'],
-                separator: ";",
-            }))
+			.pipe(
+				csv({
+					headers: [
+						"email",
+						"courseCompletion",
+						"courseEngagment",
+						"projectDegree",
+						"teamProjectDegree",
+						"bonusProjectUrls",
+					],
+					separator: ";",
+                    skipLines: 1,
+				}),
+			)
 			.on("data", (data) => {
 				const email = data.email;
 				const courseCompletion = data.courseCompletion;
@@ -37,7 +46,6 @@ export class AdminService {
 			})
 			.on("end", () => {
 				console.log(results);
-				console.log(rowResult);
 			});
 
 		return null;
