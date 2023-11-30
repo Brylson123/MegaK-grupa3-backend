@@ -6,6 +6,7 @@ import { UserService } from "src/user/user.service";
 import { HrService } from "src/hr/hr.service";
 import { AuthService } from "../auth/auth.service";
 import * as csv from "csv-parser";
+import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
 import { CreateHrResponse } from "../types";
 import { CreateStudentDto } from "src/student/dto/createStudentDto";
@@ -28,7 +29,7 @@ export class AdminService {
 					headers: [
 						"email",
 						"courseCompletion",
-						"courseEngagment",
+						"courseEngagement",
 						"projectDegree",
 						"teamProjectDegree",
 						"bonusProjectUrls",
@@ -40,7 +41,7 @@ export class AdminService {
 			.on("data", (data) => {
 				const email = data.email;
 				const courseCompletion = data.courseCompletion;
-				const courseEngagment = data.courseEngagment;
+				const courseEngagement = data.courseEngagement;
 				const projectDegree = data.projectDegree;
 				const teamProjectDegree = data.teamProjectDegree;
 				const bonusProjectUrls = data.bonusProjectUrls.split(";");
@@ -48,7 +49,7 @@ export class AdminService {
 				results.push({
 					email,
 					courseCompletion,
-					courseEngagment,
+					courseEngagement,
 					projectDegree,
 					teamProjectDegree,
 					bonusProjectUrls,
@@ -69,14 +70,14 @@ export class AdminService {
 			students.forEach(async (student) => {
 				await this.studentService.createStudent(student);
 				console.log(student);
-			});
+			}
 			return {
 				isSuccess: true,
 			};
 		} catch (e) {
 			return {
 				isSuccess: false,
-				error: e.message,
+				message: e.message,
 			};
 		}
 	}
