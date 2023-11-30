@@ -5,7 +5,7 @@ import { StudentService } from "src/student/student.service";
 import { UserService } from "src/user/user.service";
 import { HrService } from "src/hr/hr.service";
 import { AuthService } from "../auth/auth.service";
-import csv from "csv-parser";
+import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
 import { CreateHrResponse } from "../types";
 
@@ -27,7 +27,7 @@ export class AdminService {
 					headers: [
 						"email",
 						"courseCompletion",
-						"courseEngagment",
+						"courseEngagement",
 						"projectDegree",
 						"teamProjectDegree",
 						"bonusProjectUrls",
@@ -39,7 +39,7 @@ export class AdminService {
 			.on("data", (data) => {
 				const email = data.email;
 				const courseCompletion = data.courseCompletion;
-				const courseEngagment = data.courseEngagment;
+				const courseEngagement = data.courseEngagement;
 				const projectDegree = data.projectDegree;
 				const teamProjectDegree = data.teamProjectDegree;
 				const bonusProjectUrls = data.bonusProjectUrls.split(";");
@@ -47,7 +47,7 @@ export class AdminService {
 				results.push({
 					email,
 					courseCompletion,
-					courseEngagment,
+					courseEngagement,
 					projectDegree,
 					teamProjectDegree,
 					bonusProjectUrls,
@@ -63,10 +63,10 @@ export class AdminService {
 		const students = this.parseCSV(); //Nie wiem czemy to nic nie zwraca
 		console.log("In addStudents", students); //ta linijka wykonuje się przed this.parseCSV(), dlaczego?
 		try {
-			students.forEach(async (student) => {
+			for (const student of students) {
 				await this.studentService.createStudent(student);
 				console.log(student);
-			});
+			}
 			return {
 				isSuccess: true,
 			};
