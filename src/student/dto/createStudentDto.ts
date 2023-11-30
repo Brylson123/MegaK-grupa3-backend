@@ -8,7 +8,7 @@ export class CreateStudentDto {
 	@IsOptional()
 	@IsNumberString()
 	tel: string;
-
+	
 	@IsString()
 	firstName: string;
 
