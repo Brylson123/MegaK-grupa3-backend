@@ -1,3 +1,5 @@
+import { BonusProjectUrl } from "src/student/entities/bonusProjectUrls.entity";
+
 export interface StudentInterface {
 	id: string;
 	tel?: string | null;
@@ -36,6 +38,16 @@ export interface StudentsAvaibleViewInterface {
 	canTakeApprenticeship: string;
 	monthsOfCommercialExp: number;
 }
+
+export type AdminInsertStudent = {
+	token: string;
+	email: string;
+    courseCompletion: number;
+    courseEngagement: number;
+    projectDegree: number;
+    teamProjectDegree: number;
+    bonusProjectUrls: string[];
+};
 
 export enum StudentStatus {
 	ACCESSIBLE,

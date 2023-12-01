@@ -7,11 +7,13 @@ import { PortfolioUrl } from "./entities/portfolioUrl.entity";
 import { ActiveStudentsDto } from "./dto/active-studnets.dto";
 import { config } from "../config/config-database";
 import {
+	AdminInsertStudent,
 	HrToStudentInterface,
 	StudentInterface,
 	StudentsAvaibleViewInterface,
 	StudentStatus,
 	StudentsToInterviewInterface,
+	UserRole,
 	viewAllActiveStudentsResponse,
 } from "../types";
 import { HttpService } from "@nestjs/axios";
@@ -277,35 +279,31 @@ export class StudentService {
 		});
 	}
 
-	async createStudent(createStudentDto: CreateStudentDto) {
-		const student = new StudentEntity();
+	async createStudent(createStudentDto: AdminInsertStudent) {
 		try {
-			student.bio = createStudentDto.bio;
-			student.canTakeApprenticeship = createStudentDto.canTakeApprenticeship;
+			const checkUser = await UserEntity.findOne({ where: { email: createStudentDto.email } });
+			if (checkUser) {
+				console.log("taki użytkownik istenieje");
+			}
+			
+			const user = new UserEntity();
+			
+			try {
+				user.email = createStudentDto.email;
+				user.role = UserRole.STUDENT;
+				user.activeTokenId = createStudentDto.token;
+				await user.save();
+			} catch (e) {
+				return {
+					error: e.message,
+				};
+			}
+			const student = new StudentEntity();
+			student.user = user;
 			student.courseCompletion = createStudentDto.courseCompletion;
 			student.courseEngagement = createStudentDto.courseEngagement;
-			student.courses = createStudentDto.courses;
-			student.education = createStudentDto.education;
-			student.expectedContractType = createStudentDto.expectedContractType;
-			student.expectedSalary = createStudentDto.expectedSalary;
-			student.expectedTypeWork = createStudentDto.expectedTypeWork;
-			student.firstName = createStudentDto.firstName;
-			if (!!createStudentDto.gitHubUserName) {
-				const { isSuccess, message } = await this.findGithubAvatar(createStudentDto.gitHubUserName);
-				if (isSuccess) {
-					student.gitHubUserName = createStudentDto.gitHubUserName;
-				} else {
-					return message;
-				}
-			}
-			student.lastName = createStudentDto.lastName;
-			student.monthsOfCommercialExp = createStudentDto.monthsOfCommercialExp;
 			student.projectDegree = createStudentDto.projectDegree;
-			student.status = createStudentDto.status;
-			student.targetWorkCity = createStudentDto.targetWorkCity;
 			student.teamProjectDegree = createStudentDto.teamProjectDegree;
-			student.tel = createStudentDto.tel;
-			student.workExperience = createStudentDto.workExperience;
 			await student.save();
 
 			if (!!createStudentDto.bonusProjectUrls) {
@@ -316,16 +314,21 @@ export class StudentService {
 					await bonusProjectUrl.save();
 				}
 			}
-			return student.id;
+			return {
+				isSuccess: true,
+				studentId: student.id,
+			};
 		} catch (e) {
-			return e;
+			return {
+				error: e.message,
+			};
 		}
 	}
 
 	async updateStudent(id: string, updateStudentDto: UpdateStudentDto) {
 		const student = await StudentEntity.findOne({
 			where: { id: id },
-			relations: ["projectUrls", "portfolioUrls", "bonusProjectUrls"],
+			relations: ["projectUrls", "portfolioUrls", "bonusProjectUrls", "user", "hrs"],
 		});
 		try {
 			student.bio = updateStudentDto.bio;
@@ -385,9 +388,15 @@ export class StudentService {
 					portfolioUrl.save();
 				});
 			}
-			return `Entity id: ${id} updated.`;
+			return {
+				isSuccess: true,
+				message: `Entity id: ${id} updated.`,
+			};
 		} catch (e) {
-			return e;
+			return {
+				isSuccess: false,
+				error: e.message,
+			};
 		}
 	}
 

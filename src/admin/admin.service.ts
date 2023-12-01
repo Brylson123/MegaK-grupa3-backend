@@ -7,8 +7,9 @@ import { HrService } from "src/hr/hr.service";
 import { AuthService } from "../auth/auth.service";
 import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
-import { CreateHrResponse } from "../types";
+import { AdminInsertStudent, CreateHrResponse, UserRole } from "../types";
 import { CreateStudentDto } from "src/student/dto/createStudentDto";
+import { UserEntity } from "src/user/entity/user.entity";
 
 @Injectable()
 export class AdminService {
@@ -44,10 +45,10 @@ export class AdminService {
 				})
 				.on("data", (data) => {
 					const email = data.email;
-					const courseCompletion = data.courseCompletion;
-					const courseEngagement = data.courseEngagement;
-					const projectDegree = data.projectDegree;
-					const teamProjectDegree = data.teamProjectDegree;
+					const courseCompletion = Number(data.courseCompletion);
+					const courseEngagement = Number(data.courseEngagement);
+					const projectDegree = Number(data.projectDegree);
+					const teamProjectDegree = Number(data.teamProjectDegree);
 					const bonusProjectUrls = data.bonusProjectUrls.split(";");
 
 					results.push({
@@ -68,13 +69,18 @@ export class AdminService {
 
 	async addStudents() {
 		const createdStudents = [];
-		const students = await this.parseCSV();
+		const students: CreateStudentDto[] = await this.parseCSV();
 		try {
 			for (const student of students) {
-				const studentId = await this.studentService.createStudent(student);
-				createdStudents.push(studentId);
+				const activationToken = this.authService.createToken(uuid());
+				const response = await this.studentService.createStudent({
+					...student,
+					token: activationToken.accessToken,
+				});
+				if (response.isSuccess) {
+					console.log(response);
+				}
 			}
-			console.log(createdStudents);
 			return {
 				isSuccess: true,
 				createdStudents: createdStudents.length,
