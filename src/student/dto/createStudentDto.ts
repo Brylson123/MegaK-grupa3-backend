@@ -1,14 +1,41 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { IsEnum, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsEnum, IsInt, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
 import { ExpectedContractType, ExpectedTypeWork } from "../../types";
+import { BonusProjectUrl } from "../entities/bonusProjectUrls.entity";
 
 export class CreateStudentDto {
-	id: string;
+	@IsEmail()
+	email: string;
+
+	@IsOptional()
+	@IsInt()
+	courseCompletion: number;
+
+	@IsOptional()
+	@IsString()
+	courseEngagement: number;
+
+	@IsOptional()
+	@IsString()
+	projectDegree: number;
+
+	@IsOptional()
+	@IsString()
+	teamProjectDegree: number;
+
+	@IsOptional()
+	// @IsUrl()
+	bonusProjectUrls: string[];
+}
+
+export class UpdateStudentDto {
+	@IsEmail()
+	email: string;
 
 	@IsOptional()
 	@IsNumberString()
 	tel: string;
-
+	
 	@IsString()
 	firstName: string;
 
@@ -34,7 +61,7 @@ export class CreateStudentDto {
 	@IsOptional()
 	@IsString()
 	gitHubUserName: string;
-	//TODO check if this is correct gitHubUserName
+
 	@IsOptional()
 	@IsString()
 	bio: string;
@@ -91,5 +118,3 @@ export class CreateStudentDto {
 	// @IsUrl()
 	bonusProjectUrls: string[];
 }
-
-export class UpdateStudentDto extends PartialType(CreateStudentDto) {}

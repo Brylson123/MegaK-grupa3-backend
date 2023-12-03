@@ -1,7 +1,6 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param } from "@nestjs/common";
 import { HrService } from "./hr.service";
 import {
-	InsertHr,
 	StudentInterface,
 	StudentsToInterviewResponse,
 	viewAllActiveStudentsResponse,
@@ -17,10 +16,6 @@ export class HrController {
 		private readonly hrService: HrService,
 		private readonly studentService: StudentService,
 	) {}
-	@Post("/addHr")
-	createNewHr(@Body() body: InsertHr) {
-		return this.hrService.createHr(body);
-	}
 
 	@Get("/students")
 	viewAllStudents(@Body() req: ActiveStudentsDto): Promise<viewAllActiveStudentsResponse> {
