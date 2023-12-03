@@ -9,12 +9,12 @@ import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
 import { AdminInsertStudent, CreateHrResponse, UserRole } from "../types";
 import { CreateStudentDto } from "../student/dto/createStudentDto";
+import { response } from "express";
 
 @Injectable()
 export class AdminService {
 	constructor(
 		private studentService: StudentService,
-		private userService: UserService,
 		private hrService: HrService,
 		private authService: AuthService,
 	) {}
@@ -78,11 +78,12 @@ export class AdminService {
 				});
 				if (response.isSuccess) {
 					console.log(response);
+					createdStudents.push(response.studentId);
 				}
 			}
 			return {
 				isSuccess: true,
-				createdStudents: createdStudents.length,
+				cretedStudents: createdStudents.length,
 				ids: createdStudents,
 			};
 		} catch (e) {
