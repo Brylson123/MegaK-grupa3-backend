@@ -1,15 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { CreateHrDto } from "src/hr/dto/create-hr.dto";
+import { CreateHrDto } from "../hr/dto/create-hr.dto";
 import { createReadStream } from "fs";
-import { StudentService } from "src/student/student.service";
-import { UserService } from "src/user/user.service";
-import { HrService } from "src/hr/hr.service";
+import { StudentService } from "../student/student.service";
+import { UserService } from "../user/user.service";
+import { HrService } from "../hr/hr.service";
 import { AuthService } from "../auth/auth.service";
 import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
 import { AdminInsertStudent, CreateHrResponse, UserRole } from "../types";
-import { CreateStudentDto } from "src/student/dto/createStudentDto";
-import { UserEntity } from "src/user/entity/user.entity";
+import { CreateStudentDto } from "../student/dto/createStudentDto";
 
 @Injectable()
 export class AdminService {

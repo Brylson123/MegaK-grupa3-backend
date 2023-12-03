@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { AdminService } from "./admin.service";
-import { CreateHrDto } from "src/hr/dto/create-hr.dto";
+import { CreateHrDto } from "../hr/dto/create-hr.dto";
 import { CreateHrResponse } from "../types";
 
 @Controller("/admin")

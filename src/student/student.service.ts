@@ -285,9 +285,9 @@ export class StudentService {
 			if (checkUser) {
 				console.log("taki użytkownik istenieje");
 			}
-			
+
 			const user = new UserEntity();
-			
+
 			try {
 				user.email = createStudentDto.email;
 				user.role = UserRole.STUDENT;
