@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UsePipes, ValidationPipe } from "@nestjs/common";
 import { CreateHrDto } from "../hr/dto/create-hr.dto";
 import { createReadStream } from "fs";
 import { StudentService } from "../student/student.service";
@@ -92,7 +92,7 @@ export class AdminService {
 			};
 		}
 	}
-
+	@UsePipes(new ValidationPipe())
 	async addHr(data: CreateHrDto): Promise<CreateHrResponse> {
 		const activationToken = this.authService.createToken(uuid());
 		try {

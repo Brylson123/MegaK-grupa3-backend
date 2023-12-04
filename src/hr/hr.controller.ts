@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch } from "@nestjs/common";
 import { HrService } from "./hr.service";
 import {
+	ReservationStudentResponse,
 	StudentInterface,
 	StudentsToInterviewResponse,
 	viewAllActiveStudentsResponse,
@@ -9,6 +10,7 @@ import { StudentService } from "../student/student.service";
 import { ActiveStudentsDto } from "../student/dto/active-studnets.dto";
 import { UserObj } from "../decorators/user-obj.decorator";
 import { UserEntity } from "../user/entity/user.entity";
+import { ReservationStudentDto } from "../student/dto/reservation-student.dto";
 
 @Controller("/hr")
 export class HrController {
@@ -32,5 +34,13 @@ export class HrController {
 	@Get("/students/cv/:id")
 	showStudentInfo(@Param("id") id: string): Promise<StudentInterface> {
 		return this.studentService.findOne(id);
+	}
+
+	@Patch("/students/reservation")
+	reservation(
+		@Body() ReservationStudentDto: ReservationStudentDto,
+		@UserObj() user: UserEntity,
+	): Promise<ReservationStudentResponse> {
+		return this.studentService.reservation(ReservationStudentDto, user);
 	}
 }
