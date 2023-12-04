@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { CreateStudentDto, UpdateStudentDto } from "./dto/createStudentDto";
+import { UpdateStudentDto } from "./dto/createStudentDto";
 import { StudentEntity } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
 import { ProjectUrl } from "./entities/projectUrl.entity";
@@ -8,6 +8,7 @@ import { ActiveStudentsDto } from "./dto/active-studnets.dto";
 import { config } from "../config/config-database";
 import {
 	AdminInsertStudent,
+	DisinterestStudentResponse,
 	HrToStudentInterface,
 	ReservationStudentResponse,
 	StudentInterface,
@@ -21,6 +22,7 @@ import { HttpService } from "@nestjs/axios";
 import { HrStudentEntity } from "../hr/entities/hr.student.entity";
 import { UserEntity } from "../user/entity/user.entity";
 import { ReservationStudentDto } from "./dto/reservation-student.dto";
+import { DisinterestStudentDto } from "./dto/disinterest-student.dto";
 
 @Injectable()
 export class StudentService {
@@ -441,6 +443,28 @@ export class StudentService {
 			};
 		} catch (e) {
 			throw new BadRequestException('Nie udało się dodać kursanta "Do rozmowy"');
+		}
+	}
+
+	async disinterest({ studentId }: DisinterestStudentDto): Promise<DisinterestStudentResponse> {
+		const student = await this.findOne(studentId);
+
+		if (!student) {
+			return {
+				isSuccess: false,
+				message: "Nie znaleziono takiego kursanta.",
+			};
+		}
+
+		const { affected } = await StudentEntity.update(
+			{ id: student.id, status: StudentStatus.PENDING },
+			{ status: StudentStatus.ACCESSIBLE },
+		);
+
+		if (affected === 0) {
+			return { isSuccess: false };
+		} else {
+			return { isSuccess: true };
 		}
 	}
 }

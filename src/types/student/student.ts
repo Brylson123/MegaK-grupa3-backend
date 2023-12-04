@@ -89,3 +89,12 @@ export type ReservationStudentResponse = {
 	isSuccess: boolean;
 	message: string;
 };
+
+export type DisinterestStudentResponse =
+	| {
+			isSuccess: false;
+			message: string;
+	  }
+	| {
+			isSuccess: boolean;
+	  };
