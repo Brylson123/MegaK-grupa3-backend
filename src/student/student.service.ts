@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UsePipes, ValidationPipe } from "@nestjs/common";
 import { CreateStudentDto, UpdateStudentDto } from "./dto/createStudentDto";
 import { StudentEntity } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
@@ -278,7 +278,8 @@ export class StudentService {
 			},
 		});
 	}
-
+	
+	@UsePipes(new ValidationPipe())
 	async createStudent(createStudentDto: AdminInsertStudent) {
 		try {
 			const checkUser = await UserEntity.findOne({ where: { email: createStudentDto.email } });

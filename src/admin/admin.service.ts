@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UsePipes, ValidationPipe } from "@nestjs/common";
 import { CreateHrDto } from "../hr/dto/create-hr.dto";
 import { createReadStream } from "fs";
 import { StudentService } from "../student/student.service";
@@ -9,8 +9,6 @@ import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
 import { AdminInsertStudent, CreateHrResponse, UserRole } from "../types";
 import { CreateStudentDto } from "../student/dto/createStudentDto";
-import { response } from "express";
-import { MongoMissingCredentialsError } from "typeorm";
 
 @Injectable()
 export class AdminService {
@@ -67,6 +65,7 @@ export class AdminService {
 		});
 	};
 
+	@UsePipes(new ValidationPipe())
 	async addStudents() {
 		const createdStudents = [];
 		const errors = [];
