@@ -10,6 +10,7 @@ import { v4 as uuid } from "uuid";
 import { AdminInsertStudent, CreateHrResponse, UserRole } from "../types";
 import { CreateStudentDto } from "../student/dto/createStudentDto";
 import { response } from "express";
+import { MongoMissingCredentialsError } from "typeorm";
 
 @Injectable()
 export class AdminService {
@@ -68,6 +69,7 @@ export class AdminService {
 
 	async addStudents() {
 		const createdStudents = [];
+		const errors = [];
 		const students: CreateStudentDto[] = await this.parseCSV();
 		try {
 			for (const student of students) {
@@ -79,12 +81,16 @@ export class AdminService {
 				if (response.isSuccess) {
 					console.log(response);
 					createdStudents.push(response.studentId);
+				} else {
+					console.log(response);
+					errors.push(response);
 				}
 			}
 			return {
 				isSuccess: true,
 				cretedStudents: createdStudents.length,
 				ids: createdStudents,
+				errors: errors,
 			};
 		} catch (e) {
 			return {
