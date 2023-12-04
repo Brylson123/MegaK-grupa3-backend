@@ -36,7 +36,7 @@ export class HrController {
 		return this.studentService.findOne(id);
 	}
 
-	@Patch("/students/reservation")
+	@Patch("/student/reservation")
 	reservation(
 		@Body() ReservationStudentDto: ReservationStudentDto,
 		@UserObj() user: UserEntity,
