@@ -1,7 +1,6 @@
 import { mailConfig } from "./config/config-mailer";
 import { HandlebarsAdapter } from "@nest-modules/mailer";
 
-
 export = {
 	transport: {
 		host: mailConfig.mailHost,
@@ -16,11 +15,11 @@ export = {
 		from: mailConfig.adminEmail,
 	},
 	template: {
-		dir: 'templates/email',
+		dir: "./templates/email",
 		adapter: new HandlebarsAdapter(),
 		options: {
 			strict: true,
 		},
 	},
-	preview: mailConfig.mailPreview
+	preview: mailConfig.mailPreview,
 };
