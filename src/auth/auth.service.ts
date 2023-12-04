@@ -5,7 +5,7 @@ import { v4 as uuid } from "uuid";
 import { sign } from "jsonwebtoken";
 import { JwtPayload } from "./jwt.strategy";
 import { UserEntity } from "../user/entity/user.entity";
-import { AuthLoginRequest } from "../types/auth";
+import { AuthLoginRequest } from "../types";
 import { UserRole } from "../types";
 
 @Injectable()
@@ -69,7 +69,7 @@ export class AuthService {
 				where: {
 					email: req.email,
 				},
-				relations: ["studentInfo", "hr"],
+				relations: ["student", "hr"],
 			});
 
 			if (!user) {
@@ -87,7 +87,7 @@ export class AuthService {
 				});
 			}
 
-			if (!this.checkActiveUser(user)) {
+			if (!this.checkActiveUser(user) === true) {
 				return res.json({
 					isSuccess: false,
 					message: "Użytkownik jest nieaktywny!",
@@ -117,6 +117,7 @@ export class AuthService {
 	}
 
 	async logout(user: UserEntity, res: Response): Promise<any> {
+		console.log(user);
 		try {
 			user.currentTokenId = null;
 			await user.save();

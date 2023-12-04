@@ -10,6 +10,7 @@ import {
 import {
 	ExpectedContractType,
 	ExpectedTypeWork,
+	HrToStudentInterface,
 	StudentInterface,
 	StudentStatus,
 } from "../../types";
@@ -163,7 +164,7 @@ export class StudentEntity extends BaseEntity implements StudentInterface {
 		onUpdate: "CASCADE",
 	})
 	@JoinColumn()
-	hrs: HrStudentEntity[];
+	hrs: HrToStudentInterface[];
 
 	@OneToOne(() => UserEntity, {
 		onDelete: "CASCADE",

@@ -1,3 +1,6 @@
+import { HrToStudentInterface } from "../hr";
+import { UserInterface } from "../user";
+
 export interface StudentInterface {
 	id: string;
 	tel?: string | null;
@@ -19,6 +22,8 @@ export interface StudentInterface {
 	workExperience: string | null;
 	courses?: string | null;
 	status: StudentStatus;
+	user: UserInterface;
+	hrs: HrToStudentInterface[];
 }
 
 export interface StudentsAvaibleViewInterface {

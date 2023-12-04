@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { UserInterface, UserRole } from "../../types";
+import { HrInterface, StudentInterface, UserInterface, UserRole } from "../../types";
 import { StudentEntity } from "../../student/entities/student.entity";
 import { HrEntity } from "../../hr/entities/hr.entity";
 
@@ -9,57 +9,45 @@ export class UserEntity extends BaseEntity implements UserInterface {
 	id: string;
 
 	@Column({
-		type: "varchar",
-		nullable: false,
+		length: 255,
 		unique: true,
 	})
 	email: string;
 
-	@Column({
-		type: "varchar",
-	})
+	@Column()
 	pwdHash: string;
 
-	@Column({
-		type: "varchar",
-	})
+	@Column()
 	salt: string;
 
 	@Column({
-		type: "varchar",
 		nullable: true,
 		default: null,
 	})
 	currentTokenId: string | null;
 
 	@Column({
-		type: "varchar",
 		nullable: true,
 	})
 	activeTokenId: string | null;
 
 	@Column({
-		type: "tinyint",
 		default: false,
 	})
 	active: boolean;
 
-	@Column({
-		type: "tinyint",
-	})
+	@Column()
 	role: UserRole;
 
 	@OneToOne(() => StudentEntity, {
 		onDelete: "CASCADE",
-		onUpdate: "CASCADE",
 	})
 	@JoinColumn()
-	student: StudentEntity;
+	student: StudentInterface;
 
 	@OneToOne(() => HrEntity, {
 		onDelete: "CASCADE",
-		onUpdate: "CASCADE",
 	})
 	@JoinColumn()
-	hr: HrEntity;
+	hr: HrInterface;
 }
