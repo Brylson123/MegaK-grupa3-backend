@@ -7,7 +7,12 @@ import {
 	OneToOne,
 	PrimaryGeneratedColumn,
 } from "typeorm";
-import { ExpectedContractType, ExpectedTypeWork, StudentInterface } from "../../types";
+import {
+	ExpectedContractType,
+	ExpectedTypeWork,
+	StudentInterface,
+	StudentStatus,
+} from "../../types";
 import { PortfolioUrl } from "./portfolioUrl.entity";
 import { ProjectUrl } from "./projectUrl.entity";
 import { BonusProjectUrl } from "./bonusProjectUrls.entity";
@@ -130,11 +135,10 @@ export class StudentEntity extends BaseEntity implements StudentInterface {
 	courses: string;
 
 	@Column({
-		type: "varchar",
-		nullable: true,
+		type: "tinyint",
 		default: 0,
 	})
-	status: string;
+	status: StudentStatus;
 
 	@OneToMany(() => PortfolioUrl, (portfolioUrl) => portfolioUrl.student, {
 		onDelete: "CASCADE",

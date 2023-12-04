@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateStudentDto, UpdateStudentDto } from "./dto/createStudentDto";
 import { StudentEntity } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
@@ -9,6 +9,7 @@ import { config } from "../config/config-database";
 import {
 	AdminInsertStudent,
 	HrToStudentInterface,
+	ReservationStudentResponse,
 	StudentInterface,
 	StudentsAvaibleViewInterface,
 	StudentStatus,
@@ -19,6 +20,7 @@ import {
 import { HttpService } from "@nestjs/axios";
 import { HrStudentEntity } from "../hr/entities/hr.student.entity";
 import { UserEntity } from "../user/entity/user.entity";
+import { ReservationStudentDto } from "./dto/reservation-student.dto";
 
 @Injectable()
 export class StudentService {
@@ -406,6 +408,39 @@ export class StudentService {
 			return `Student id: ${id} has been deleted.`;
 		} catch (e) {
 			return e;
+		}
+	}
+
+	async reservation(
+		{ studentId }: ReservationStudentDto,
+		user: UserEntity,
+	): Promise<ReservationStudentResponse> {
+		const { hr } = user;
+		if (hr.studentInterview.some((el) => el.studentId === studentId)) {
+			throw new BadRequestException('Student już jest dodany w "Do Rozmowy".');
+		}
+		const student = await this.findOne(studentId);
+		const active = student.user.active;
+		const { status } = student;
+		const { maxReservationStudent } = hr;
+		if (maxReservationStudent <= hr.studentInterview.length) {
+			throw new BadRequestException('Nie możesz dodać więcej kursantów "Do Rozmowy.');
+		}
+		if (active === false || status !== StudentStatus.ACCESSIBLE) {
+			throw new BadRequestException("Kursant jest niedostępny.");
+		}
+		try {
+			const hrToStudent = new HrStudentEntity();
+			hrToStudent.hr = hr;
+			hrToStudent.student = student;
+			hrToStudent.reservationTo = new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000);
+			await hrToStudent.save();
+			return {
+				message: 'Dodano kursanta "Do rozmowy"',
+				isSuccess: true,
+			};
+		} catch (e) {
+			throw new BadRequestException('Nie udało się dodać kursanta "Do rozmowy"');
 		}
 	}
 }
