@@ -40,7 +40,7 @@ export class HrController {
 		return this.studentService.findOne(id);
 	}
 
-	@Patch("/student/reservation")
+	@Patch("/students/reservation")
 	reservation(
 		@Body() ReservationStudentDto: ReservationStudentDto,
 		@UserObj() user: UserEntity,
@@ -48,7 +48,7 @@ export class HrController {
 		return this.studentService.reservation(ReservationStudentDto, user);
 	}
 
-	@Patch("/student/disinterest")
+	@Patch("/students/disinterest")
 	disinterest(
 		@Body() disinterestStudentDto: DisinterestStudentDto,
 	): Promise<DisinterestStudentResponse> {
