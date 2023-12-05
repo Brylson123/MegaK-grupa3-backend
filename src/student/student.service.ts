@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, UsePipes, ValidationPipe } from "@nestjs/common";
 import { UpdateStudentDto } from "./dto/createStudentDto";
 import { StudentEntity } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
@@ -24,10 +24,16 @@ import { HrStudentEntity } from "../hr/entities/hr.student.entity";
 import { UserEntity } from "../user/entity/user.entity";
 import { ReservationStudentDto } from "./dto/reservation-student.dto";
 import { DisinterestStudentDto } from "./dto/disinterest-student.dto";
+import { ValidateCreateStudent } from "../utils/validateCreateStudent";
+import { userInfo } from "os";
 
 @Injectable()
 export class StudentService {
-	constructor(private httpService: HttpService) {}
+	constructor(
+		private httpService: HttpService,
+		private validateCreateStudent: ValidateCreateStudent,
+	) {}
+
 	private filterAvaibleStudents = (student: StudentInterface[]): StudentsAvaibleViewInterface[] => {
 		return student.map((student) => {
 			const {
@@ -296,7 +302,11 @@ export class StudentService {
 
 	async createStudent(createStudentDto: AdminInsertStudent) {
 		try {
-			const checkUser = await UserEntity.findOne({ where: { email: createStudentDto.email } });
+			const validatedCreateStudentDto =
+				await this.validateCreateStudent.validateData(createStudentDto);
+			const checkUser = await UserEntity.findOne({
+				where: { email: validatedCreateStudentDto.email },
+			});
 			if (checkUser) {
 				console.log("taki użytkownik istenieje");
 			}
@@ -304,9 +314,9 @@ export class StudentService {
 			const user = new UserEntity();
 
 			try {
-				user.email = createStudentDto.email;
+				user.email = validatedCreateStudentDto.email;
 				user.role = UserRole.STUDENT;
-				user.activeTokenId = createStudentDto.token;
+				user.activeTokenId = validatedCreateStudentDto.token;
 				await user.save();
 			} catch (e) {
 				return {
@@ -315,15 +325,16 @@ export class StudentService {
 			}
 			const student = new StudentEntity();
 			student.user = user;
-			student.courseCompletion = createStudentDto.courseCompletion;
-			student.courseEngagement = createStudentDto.courseEngagement;
-			student.projectDegree = createStudentDto.projectDegree;
-			student.teamProjectDegree = createStudentDto.teamProjectDegree;
+			student.courseCompletion = validatedCreateStudentDto.courseCompletion;
+			student.courseEngagement = validatedCreateStudentDto.courseEngagement;
+			student.projectDegree = validatedCreateStudentDto.projectDegree;
+			student.teamProjectDegree = validatedCreateStudentDto.teamProjectDegree;
 			await student.save();
 			user.student = student;
 			await user.save();
-			if (!!createStudentDto.bonusProjectUrls) {
-				for (const url of createStudentDto.bonusProjectUrls) {
+			if (!!validatedCreateStudentDto.bonusProjectUrls) {
+				for (const url of validatedCreateStudentDto.bonusProjectUrls) {
+
 					const bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
@@ -375,7 +386,7 @@ export class StudentService {
 			student.workExperience = updateStudentDto.workExperience;
 			await student.save();
 
-			if (updateStudentDto.projectUrls.length > 0) {
+			if (!!updateStudentDto.projectUrls) {
 				await ProjectUrl.remove(student.projectUrls);
 				updateStudentDto.projectUrls.forEach((url) => {
 					const projectUrl = new ProjectUrl();
@@ -394,8 +405,7 @@ export class StudentService {
 			// 		bonusProjectUrl.save();
 			// 	});
 			// }
-			await PortfolioUrl.remove(student.portfolioUrls);
-			if (updateStudentDto.portfolioUrls) {
+			if (!!updateStudentDto.portfolioUrls) {
 				await PortfolioUrl.remove(student.portfolioUrls);
 				updateStudentDto.portfolioUrls.forEach((url) => {
 					const portfolioUrl = new PortfolioUrl();
@@ -404,9 +414,11 @@ export class StudentService {
 					portfolioUrl.save();
 				});
 			}
+
 			return {
 				isSuccess: true,
-				message: `Entity id: ${id} updated.`,
+				message: `Student with id: ${id} has been updated.`,
+				email: student.user.email,
 			};
 		} catch (e) {
 			return {
