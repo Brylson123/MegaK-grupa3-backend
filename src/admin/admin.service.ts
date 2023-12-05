@@ -14,7 +14,6 @@ import { CreateStudentDto } from "../student/dto/createStudentDto";
 export class AdminService {
 	constructor(
 		private studentService: StudentService,
-		private userService: UserService,
 		private hrService: HrService,
 		private authService: AuthService,
 	) {}
@@ -66,8 +65,10 @@ export class AdminService {
 		});
 	};
 
+	@UsePipes(new ValidationPipe())
 	async addStudents() {
 		const createdStudents = [];
+		const errors = [];
 		const students: CreateStudentDto[] = await this.parseCSV();
 		try {
 			for (const student of students) {
@@ -78,12 +79,17 @@ export class AdminService {
 				});
 				if (response.isSuccess) {
 					console.log(response);
+					createdStudents.push(response.studentId);
+				} else {
+					console.log(response);
+					errors.push(response);
 				}
 			}
 			return {
 				isSuccess: true,
-				createdStudents: createdStudents.length,
+				cretedStudents: createdStudents.length,
 				ids: createdStudents,
+				errors: errors,
 			};
 		} catch (e) {
 			return {
