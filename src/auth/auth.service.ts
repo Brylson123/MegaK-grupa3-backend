@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { AuthLoginDto } from "./dto/auth-login.dto";
 import { hashPwd } from "../utils/hash-pwd";
 import { Response } from "express";
 import { v4 as uuid } from "uuid";
 import { sign } from "jsonwebtoken";
 import { JwtPayload } from "./jwt.strategy";
 import { UserEntity } from "../user/entity/user.entity";
+import { AuthLoginRequest } from "../types";
+import { UserRole } from "../types";
 
 @Injectable()
 export class AuthService {
@@ -25,7 +26,17 @@ export class AuthService {
 			expiresIn,
 		};
 	}
+	private checkActiveUser = (user: UserEntity) => user.active === true;
 
+	private getUserFullName = (user: UserEntity) => {
+		if (user.role === UserRole.STUDENT) {
+			return user.student?.firstName + user.student?.lastName;
+		} else if (user.role === UserRole.HR) {
+			return user.hr.fullName;
+		} else {
+			return "ADMIN";
+		}
+	};
 	private async generateToken(user: UserEntity): Promise<string> {
 		let token;
 		let userWithThisToken = null;
@@ -38,16 +49,52 @@ export class AuthService {
 		return token;
 	}
 
-	async login(req: AuthLoginDto, res: Response): Promise<any> {
+	async login(req: AuthLoginRequest, res: Response) {
 		try {
-			const user = await UserEntity.findOneBy({
-				email: req.email,
-				pwdHash: hashPwd(req.pwd),
-			});
-			if (!user) {
-				return res.json({ message: "login invalid" });
+			if (!req.email.includes("@")) {
+				return res.json({
+					isSuccess: false,
+					message: "Błędny e-mail.",
+				});
 			}
-			const token = await this.createToken(await this.generateToken(user));
+
+			if (req.pwd.length < 2) {
+				return res.json({
+					isSuccess: false,
+					message: "Hasło nie może być mniejsze od dwóch znaków.",
+				});
+			}
+
+			const user = await UserEntity.findOne({
+				where: {
+					email: req.email,
+				},
+				relations: ["student", "hr"],
+			});
+
+			if (!user) {
+				return res.json({
+					isSuccess: false,
+					message: "Niepoprawne dane logowania!",
+				});
+			}
+
+			const password = hashPwd(req.pwd, user.salt);
+			if (user.pwdHash !== password) {
+				return res.json({
+					isSuccess: false,
+					message: "Niepoprawne dane logowania!",
+				});
+			}
+
+			if (!this.checkActiveUser(user) === true) {
+				return res.json({
+					isSuccess: false,
+					message: "Użytkownik jest nieaktywny!",
+				});
+			}
+
+			const token = this.createToken(await this.generateToken(user));
 
 			return res
 				.cookie("jwt", token.accessToken, {
@@ -55,13 +102,22 @@ export class AuthService {
 					domain: "localhost",
 					httpOnly: true,
 				})
-				.json({ ok: true, name: user.email });
+				.json({
+					isSuccess: true,
+					userFullName: this.getUserFullName(user),
+					userId: user.id,
+					userRole: user.role,
+				});
 		} catch (e) {
-			return res.json({ error: e.message });
+			return res.json({
+				isSuccess: false,
+				message: e.message,
+			});
 		}
 	}
 
 	async logout(user: UserEntity, res: Response): Promise<any> {
+		console.log(user);
 		try {
 			user.currentTokenId = null;
 			await user.save();

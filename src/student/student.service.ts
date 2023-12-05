@@ -15,6 +15,7 @@ import {
 	StudentsAvaibleViewInterface,
 	StudentStatus,
 	StudentsToInterviewInterface,
+	StudentsToInterviewResponse,
 	UserRole,
 	viewAllActiveStudentsResponse,
 } from "../types";
@@ -195,7 +196,17 @@ export class StudentService {
 		}
 	}
 
-	async findAllToInterview(req: ActiveStudentsDto, user: UserEntity) {
+	async findAllToInterview(
+		req: ActiveStudentsDto,
+		user: UserEntity,
+	): Promise<StudentsToInterviewResponse> {
+		const hrUser = await UserEntity.findOne({
+			where: {
+				email: user.email,
+			},
+			relations: ["student", "hr"],
+		});
+
 		try {
 			const {
 				pageSize,
@@ -218,11 +229,11 @@ export class StudentService {
 			const [students, count] = await config
 				.getRepository(HrStudentEntity)
 				.createQueryBuilder("hrStudentEntity")
-				.leftJoinAndSelect("hrStudentEntity.student", "studentInfo")
+				.leftJoinAndSelect("hrStudentEntity.student", "studentId")
 				.where(
-					'hrId = :hrId AND courseCompletion >= :courseCompletion AND courseEngagment >= :courseEngagment AND projectDegree >= :projectDegree AND teamProjectDegree >= :teamProjectDegree AND (canTakeApprenticeship = :canTakeApprenticeship OR canTakeApprenticeship = "Tak") AND monthsOfCommercialExp >= :monthsOfCommercialExp AND (expectedSalary BETWEEN :expectedSalaryMin AND :expectedSalaryMax OR expectedSalary IS null)',
+					'hrId = :hrId AND courseCompletion >= :courseCompletion AND courseEngagement >= :courseEngagement AND projectDegree >= :projectDegree AND teamProjectDegree >= :teamProjectDegree AND (canTakeApprenticeship = :canTakeApprenticeship OR canTakeApprenticeship = "Tak") AND monthsOfCommercialExp >= :monthsOfCommercialExp AND (expectedSalary BETWEEN :expectedSalaryMin AND :expectedSalaryMax OR expectedSalary IS null)',
 					{
-						hrId: user.hr.id,
+						hrId: hrUser.id,
 						courseCompletion,
 						courseEngagement,
 						projectDegree,
@@ -238,7 +249,7 @@ export class StudentService {
 						? "hrId = :hr"
 						: '(expectedContractType IN (:expectedContractType) OR expectedContractType = "Bez znaczenia")',
 					{
-						hr: user.hr.id,
+						hr: hrUser.id,
 						expectedContractType,
 					},
 				)
@@ -247,7 +258,7 @@ export class StudentService {
 						? "hrId = :hr"
 						: '(expectedTypeWork IN (:expectedTypeWork) OR expectedTypeWork = "Bez znaczenia" )',
 					{
-						hr: user.hr.id,
+						hr: hrUser.id,
 						expectedTypeWork,
 					},
 				)
@@ -256,7 +267,7 @@ export class StudentService {
 						? "hrId = :hr "
 						: '(MATCH(targetWorkCity) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(expectedTypeWork) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(expectedContractType) AGAINST (":searchTerm*" IN BOOLEAN MODE)OR MATCH(firstName) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(lastName) AGAINST (":searchTerm*" IN BOOLEAN MODE))',
 					{
-						hr: user.hr.id,
+						hr: hrUser.id,
 						searchTerm,
 					},
 				)
@@ -319,9 +330,11 @@ export class StudentService {
 			student.projectDegree = validatedCreateStudentDto.projectDegree;
 			student.teamProjectDegree = validatedCreateStudentDto.teamProjectDegree;
 			await student.save();
-
+			user.student = student;
+			await user.save();
 			if (!!validatedCreateStudentDto.bonusProjectUrls) {
 				for (const url of validatedCreateStudentDto.bonusProjectUrls) {
+
 					const bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;

@@ -5,6 +5,7 @@ import {
 	ReservationStudentResponse,
 	StudentInterface,
 	StudentsToInterviewResponse,
+	UserRole,
 	viewAllActiveStudentsResponse,
 } from "../types";
 import { StudentService } from "../student/student.service";
@@ -14,6 +15,8 @@ import { UserEntity } from "../user/entity/user.entity";
 import { ReservationStudentDto } from "../student/dto/reservation-student.dto";
 import { AuthGuard } from "@nestjs/passport";
 import { DisinterestStudentDto } from "../student/dto/disinterest-student.dto";
+import { RolesGuard } from "../guards/roles.guard";
+import { Roles } from "../decorators/roles.decorator";
 
 @Controller("/hr")
 export class HrController {
@@ -28,7 +31,8 @@ export class HrController {
 	}
 
 	@Get("/students/interview")
-	@UseGuards(AuthGuard("jwt"))
+	@Roles(UserRole.HR)
+	@UseGuards(AuthGuard("jwt"), RolesGuard)
 	viewAllStudentsToInterview(
 		@Body() req: ActiveStudentsDto,
 		@UserObj() user: UserEntity,
