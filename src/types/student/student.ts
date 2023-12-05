@@ -103,3 +103,21 @@ export type DisinterestStudentResponse =
 	| {
 			isSuccess: boolean;
 	  };
+
+export type StudentResponse = {
+	id: string;
+	tel: string | null;
+	firstName: string;
+	lastName: string;
+	bio: string;
+	expectedTypeWork: ExpectedTypeWork;
+	targetWorkCity: string;
+	expectedContractType: ExpectedContractType;
+	expectedSalary?: string;
+	canTakeApprenticeship: string;
+	monthsOfCommercialExp: number;
+	education: string | null;
+	workExperience: string | null;
+	courses: string | null;
+	email: string;
+}

@@ -1,5 +1,14 @@
-
-import { IsEmail, IsEnum, IsInt, IsNumber, IsNumberString, IsOptional, IsString, Max, Min } from "class-validator";
+import {
+	IsEmail,
+	IsEnum,
+	IsInt,
+	IsNumber,
+	IsNumberString,
+	IsOptional,
+	IsString,
+	Max,
+	Min,
+} from "class-validator";
 import { ExpectedContractType, ExpectedTypeWork, StudentStatus } from "../../types";
 import { BonusProjectUrl } from "../entities/bonusProjectUrls.entity";
 
@@ -9,26 +18,26 @@ export class CreateStudentDto {
 
 	@IsOptional()
 	@IsInt()
-    @Min(0)
-    @Max(5)
+	@Min(0)
+	@Max(5)
 	courseCompletion: number;
 
 	@IsOptional()
 	@IsInt()
-    @Min(0)
-    @Max(5)
+	@Min(0)
+	@Max(5)
 	courseEngagement: number;
 
 	@IsOptional()
 	@IsInt()
-    @Min(0)
-    @Max(5)
+	@Min(0)
+	@Max(5)
 	projectDegree: number;
 
 	@IsOptional()
 	@IsInt()
-    @Min(0)
-    @Max(5)
+	@Min(0)
+	@Max(5)
 	teamProjectDegree: number;
 
 	@IsOptional()
