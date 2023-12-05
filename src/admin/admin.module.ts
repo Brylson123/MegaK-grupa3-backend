@@ -9,10 +9,11 @@ import { UserModule } from "../user/user.module";
 import { HrModule } from "../hr/hr.module";
 import { StudentModule } from "../student/student.module";
 import { AuthModule } from "../auth/auth.module";
+import { ValidateCreateStudent } from "src/utils/validateCreateStudent";
 
 @Module({
 	imports: [HttpModule, UserModule, HrModule, StudentModule, AuthModule],
 	controllers: [AdminController],
-	providers: [AdminService, StudentService, UserService, HrService],
+	providers: [AdminService, StudentService, UserService, HrService, ValidateCreateStudent],
 })
 export class AdminModule {}
