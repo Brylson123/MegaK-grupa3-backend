@@ -300,6 +300,41 @@ export class StudentService {
 		});
 	}
 
+	async findOneStudent(id: string) {
+		try {
+			const student = await StudentEntity.findOne({
+				where: { id: id },
+				relations: {
+					projectUrls: true,
+					portfolioUrls: true,
+				},
+			});
+	
+			const {courseCompletion,
+				courseEngagement,
+				projectDegree,
+				teamProjectDegree,
+				status,
+				...restOfStudent} = student;
+			
+			const {user} = await StudentEntity.findOne({
+				where: { id: id },
+				relations: {
+					user: true,
+				},
+			});
+			 return {
+				...restOfStudent,
+				email: user.email,	
+			}
+		} catch(e) {
+			return {
+				isSuccess: false,
+				error: e.message,
+			}
+		}
+	}
+
 	async createStudent(createStudentDto: AdminInsertStudent) {
 		try {
 			const validatedCreateStudentDto =
@@ -395,16 +430,6 @@ export class StudentService {
 					projectUrl.save();
 				});
 			}
-			// await BonusProjectUrl.remove(student.bonusProjectUrls);
-			// if (updateStudentDto.bonusProjectUrls) {
-				// 	await BonusProjectUrl.remove(student.bonusProjectUrls);
-				// 	updateStudentDto.bonusProjectUrls.forEach((url) => {
-					// 		const bonusProjectUrl = new BonusProjectUrl();
-					// 		bonusProjectUrl.student = student;
-					// 		bonusProjectUrl.bonusProjectUrl = url;
-					// 		bonusProjectUrl.save();
-			// 	});
-			// }
 			if (!!updateStudentDto.portfolioUrls) {
 				await PortfolioUrl.remove(student.portfolioUrls);
 				updateStudentDto.portfolioUrls.forEach((url) => {

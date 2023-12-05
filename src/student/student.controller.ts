@@ -2,14 +2,15 @@ import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common"
 import { StudentService } from "./student.service";
 import { UpdateStudentDto } from "./dto/createStudentDto";
 import { StudentEntity } from "./entities/student.entity";
+import { StudentResponse } from "../types";
 
 @Controller("student")
 export class StudentController {
 	constructor(private studentService: StudentService) {}
 
 	@Get(":id")
-	findOne(@Param("id") id: string): Promise<StudentEntity> {
-		return this.studentService.findOne(id);
+	findOne(@Param("id") id: string): Promise<StudentResponse> {
+		return this.studentService.findOneStudent(id);
 	}
 
 	@Put(":id")
