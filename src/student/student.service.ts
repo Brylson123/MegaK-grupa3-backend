@@ -442,6 +442,7 @@ export class StudentService {
 			}
 
 			await student.save();
+			await student.user.save();
 			return {
 				isSuccess: true,
 				message: `Student with id: ${id} has been updated.`,
