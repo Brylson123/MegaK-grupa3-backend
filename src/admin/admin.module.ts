@@ -9,7 +9,7 @@ import { UserModule } from "../user/user.module";
 import { HrModule } from "../hr/hr.module";
 import { StudentModule } from "../student/student.module";
 import { AuthModule } from "../auth/auth.module";
-import { ValidateCreateStudent } from "src/utils/validateCreateStudent";
+import { ValidateCreateStudent } from "../utils/validateCreateStudent";
 
 @Module({
 	imports: [HttpModule, UserModule, HrModule, StudentModule, AuthModule],
