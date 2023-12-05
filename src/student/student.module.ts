@@ -3,8 +3,8 @@ import { StudentController } from "./student.controller";
 import { StudentService } from "./student.service";
 import { DatabaseModule } from "../database/database.module";
 import { HttpModule } from "@nestjs/axios";
-import { ValidateCreateStudent } from "src/utils/validateCreateStudent";
-import { UserService } from "src/user/user.service";
+import { ValidateCreateStudent } from "../utils/validateCreateStudent";
+import { UserService } from "../user/user.service";
 
 @Module({
 	imports: [DatabaseModule, HttpModule],
