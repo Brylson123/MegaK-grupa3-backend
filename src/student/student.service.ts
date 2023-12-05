@@ -23,7 +23,7 @@ import { HrStudentEntity } from "../hr/entities/hr.student.entity";
 import { UserEntity } from "../user/entity/user.entity";
 import { ReservationStudentDto } from "./dto/reservation-student.dto";
 import { DisinterestStudentDto } from "./dto/disinterest-student.dto";
-import { ValidateCreateStudent } from "src/utils/validateCreateStudent";
+import { ValidateCreateStudent } from "../utils/validateCreateStudent";
 import { userInfo } from "os";
 
 @Injectable()

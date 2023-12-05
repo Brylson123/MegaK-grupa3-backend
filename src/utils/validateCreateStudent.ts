@@ -2,7 +2,7 @@ import { Injectable, ValidationPipe } from "@nestjs/common";
 import { validate } from "class-validator";
 import { CreateStudentDto } from "src/student/dto/createStudentDto";
 import { plainToClass} from 'class-transformer';
-import { AdminInsertStudent } from "src/types";
+import { AdminInsertStudent } from "../types";
 
 @Injectable()
 export class ValidateCreateStudent {
