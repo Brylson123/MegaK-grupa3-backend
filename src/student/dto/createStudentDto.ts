@@ -43,7 +43,7 @@ export class UpdateStudentDto {
 	@IsOptional()
 	@IsNumberString()
 	tel: string;
-	
+
 	@IsString()
 	firstName: string;
 
@@ -112,7 +112,7 @@ export class UpdateStudentDto {
 
 	@IsOptional()
 	@IsString()
-	status: string;
+	status: StudentStatus;
 
 	@IsOptional()
 	// @IsUrl()

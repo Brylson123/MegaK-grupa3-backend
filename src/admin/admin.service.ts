@@ -98,7 +98,7 @@ export class AdminService {
 			};
 		}
 	}
-
+	@UsePipes(new ValidationPipe())
 	async addHr(data: CreateHrDto): Promise<CreateHrResponse> {
 		const activationToken = this.authService.createToken(uuid());
 		try {

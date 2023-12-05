@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Param } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, UseGuards } from "@nestjs/common";
 import { HrService } from "./hr.service";
 import {
+	DisinterestStudentResponse,
+	ReservationStudentResponse,
 	StudentInterface,
 	StudentsToInterviewResponse,
 	viewAllActiveStudentsResponse,
@@ -9,6 +11,9 @@ import { StudentService } from "../student/student.service";
 import { ActiveStudentsDto } from "../student/dto/active-studnets.dto";
 import { UserObj } from "../decorators/user-obj.decorator";
 import { UserEntity } from "../user/entity/user.entity";
+import { ReservationStudentDto } from "../student/dto/reservation-student.dto";
+import { AuthGuard } from "@nestjs/passport";
+import { DisinterestStudentDto } from "../student/dto/disinterest-student.dto";
 
 @Controller("/hr")
 export class HrController {
@@ -23,6 +28,7 @@ export class HrController {
 	}
 
 	@Get("/students/interview")
+	@UseGuards(AuthGuard("jwt"))
 	viewAllStudentsToInterview(
 		@Body() req: ActiveStudentsDto,
 		@UserObj() user: UserEntity,
@@ -32,5 +38,20 @@ export class HrController {
 	@Get("/students/cv/:id")
 	showStudentInfo(@Param("id") id: string): Promise<StudentInterface> {
 		return this.studentService.findOne(id);
+	}
+
+	@Patch("/students/reservation")
+	reservation(
+		@Body() ReservationStudentDto: ReservationStudentDto,
+		@UserObj() user: UserEntity,
+	): Promise<ReservationStudentResponse> {
+		return this.studentService.reservation(ReservationStudentDto, user);
+	}
+
+	@Patch("/students/disinterest")
+	disinterest(
+		@Body() disinterestStudentDto: DisinterestStudentDto,
+	): Promise<DisinterestStudentResponse> {
+		return this.studentService.disinterest(disinterestStudentDto);
 	}
 }

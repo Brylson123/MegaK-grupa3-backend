@@ -1,5 +1,3 @@
-import { BonusProjectUrl } from "src/student/entities/bonusProjectUrls.entity";
-
 export interface StudentInterface {
 	id: string;
 	tel?: string | null;
@@ -20,7 +18,7 @@ export interface StudentInterface {
 	education?: string | null;
 	workExperience: string | null;
 	courses?: string | null;
-	status: string;
+	status: StudentStatus;
 }
 
 export interface StudentsAvaibleViewInterface {
@@ -42,11 +40,11 @@ export interface StudentsAvaibleViewInterface {
 export type AdminInsertStudent = {
 	token: string;
 	email: string;
-    courseCompletion: number;
-    courseEngagement: number;
-    projectDegree: number;
-    teamProjectDegree: number;
-    bonusProjectUrls: string[];
+	courseCompletion: number;
+	courseEngagement: number;
+	projectDegree: number;
+	teamProjectDegree: number;
+	bonusProjectUrls: string[];
 };
 
 export enum StudentStatus {
@@ -86,3 +84,17 @@ export type StudentsToInterviewResponse = {
 	students: StudentsToInterviewInterface[];
 	studentsCount: number;
 };
+
+export type ReservationStudentResponse = {
+	isSuccess: boolean;
+	message: string;
+};
+
+export type DisinterestStudentResponse =
+	| {
+			isSuccess: false;
+			message: string;
+	  }
+	| {
+			isSuccess: boolean;
+	  };
