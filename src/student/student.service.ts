@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UsePipes, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { UpdateStudentDto } from "./dto/createStudentDto";
 import { StudentEntity } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
@@ -25,7 +25,7 @@ import { UserEntity } from "../user/entity/user.entity";
 import { ReservationStudentDto } from "./dto/reservation-student.dto";
 import { DisinterestStudentDto } from "./dto/disinterest-student.dto";
 import { ValidateCreateStudent } from "../utils/validateCreateStudent";
-import { userInfo } from "os";
+
 
 @Injectable()
 export class StudentService {
@@ -233,7 +233,7 @@ export class StudentService {
 				.where(
 					'hrId = :hrId AND courseCompletion >= :courseCompletion AND courseEngagement >= :courseEngagement AND projectDegree >= :projectDegree AND teamProjectDegree >= :teamProjectDegree AND (canTakeApprenticeship = :canTakeApprenticeship OR canTakeApprenticeship = "Tak") AND monthsOfCommercialExp >= :monthsOfCommercialExp AND (expectedSalary BETWEEN :expectedSalaryMin AND :expectedSalaryMax OR expectedSalary IS null)',
 					{
-						hrId: hrUser.id,
+						hrId: hrUser.hr.id,
 						courseCompletion,
 						courseEngagement,
 						projectDegree,
@@ -249,7 +249,7 @@ export class StudentService {
 						? "hrId = :hr"
 						: '(expectedContractType IN (:expectedContractType) OR expectedContractType = "Bez znaczenia")',
 					{
-						hr: hrUser.id,
+						hr: hrUser.hr.id,
 						expectedContractType,
 					},
 				)
@@ -258,7 +258,7 @@ export class StudentService {
 						? "hrId = :hr"
 						: '(expectedTypeWork IN (:expectedTypeWork) OR expectedTypeWork = "Bez znaczenia" )',
 					{
-						hr: hrUser.id,
+						hr: hrUser.hr.id,
 						expectedTypeWork,
 					},
 				)
@@ -267,7 +267,7 @@ export class StudentService {
 						? "hrId = :hr "
 						: '(MATCH(targetWorkCity) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(expectedTypeWork) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(expectedContractType) AGAINST (":searchTerm*" IN BOOLEAN MODE)OR MATCH(firstName) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(lastName) AGAINST (":searchTerm*" IN BOOLEAN MODE))',
 					{
-						hr: hrUser.id,
+						hr: hrUser.hr.id,
 						searchTerm,
 					},
 				)
@@ -309,29 +309,31 @@ export class StudentService {
 					portfolioUrls: true,
 				},
 			});
-	
-			const {courseCompletion,
+
+			const {
+				courseCompletion,
 				courseEngagement,
 				projectDegree,
 				teamProjectDegree,
 				status,
-				...restOfStudent} = student;
-			
-			const {user} = await StudentEntity.findOne({
+				...restOfStudent
+			} = student;
+
+			const { user } = await StudentEntity.findOne({
 				where: { id: id },
 				relations: {
 					user: true,
 				},
 			});
-			 return {
+			return {
 				...restOfStudent,
-				email: user.email,	
-			}
-		} catch(e) {
+				email: user.email,
+			};
+		} catch (e) {
 			return {
 				isSuccess: false,
 				error: e.message,
-			}
+			};
 		}
 	}
 
@@ -369,7 +371,6 @@ export class StudentService {
 			await user.save();
 			if (!!validatedCreateStudentDto.bonusProjectUrls) {
 				for (const url of validatedCreateStudentDto.bonusProjectUrls) {
-
 					const bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
@@ -422,7 +423,6 @@ export class StudentService {
 			student.user.email = updateStudentDto.email;
 			await student.save();
 			await student.user.save();
-			
 			if (!!updateStudentDto.projectUrls) {
 				await ProjectUrl.remove(student.projectUrls);
 				updateStudentDto.projectUrls.forEach((url) => {
