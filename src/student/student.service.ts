@@ -420,6 +420,8 @@ export class StudentService {
 			student.tel = updateStudentDto.tel;
 			student.workExperience = updateStudentDto.workExperience;
 			student.user.email = updateStudentDto.email;
+			await student.save();
+			await student.user.save();
 			
 			if (!!updateStudentDto.projectUrls) {
 				await ProjectUrl.remove(student.projectUrls);
@@ -440,8 +442,6 @@ export class StudentService {
 				});
 			}
 
-			await student.save();
-			await student.user.save();
 			return {
 				isSuccess: true,
 				message: `Student with id: ${id} has been updated.`,
