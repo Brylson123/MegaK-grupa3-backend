@@ -20,7 +20,7 @@ export class AdminController {
 	}
 
 	@Post("/activateUser")
-	activateUser(@Body() data: ActivateUserDto) {
+	activateUser(@Body() data: JSON) {
 		return this.userService.sendActivationEmail(data);
 	}
 

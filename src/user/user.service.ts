@@ -82,7 +82,20 @@ export class UserService {
 	}
 
 	async sendActivationEmail(data: any) {
-		const user = await this.finOneByEmail(data.email);
-		this.mailService.sendMail(user.email, "Aktywuj konto", `api.radek.smallhost.pl/user/activate/${user.id}/${user.activeTokenId}`);
+		if(!!data.email) {
+			try {
+				const user = await this.finOneByEmail(data.email);
+				this.mailService.sendMail(user.email, "Aktywuj konto", `api.radek.smallhost.pl/user/activate/${user.id}/${user.activeTokenId}`);
+
+				return {
+					isSuccess: true,
+				}
+			} catch (e) {
+				return {
+					isSuccess: false,
+					error: e.message,
+				}
+			}
+		}
 	}
 }
