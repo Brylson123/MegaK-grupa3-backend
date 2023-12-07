@@ -1,3 +1,8 @@
+import { Inject, Injectable } from "@nestjs/common";
+import { UserEntity } from "./entity/user.entity";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { MailService } from "../mail/mail.service";
+import { studentRegistrationTemplate } from "../templates/email/student-registration.template";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { UserEntity } from "./entity/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -5,8 +10,11 @@ import { ActivateUserDto } from "./dto/activate-user.dto";
 import { ActivateUserResponse } from "../types";
 import { hashPwd, randomSalt } from "../utils/hash-pwd";
 
+
 @Injectable()
 export class UserService {
+	constructor(@Inject(MailService) private mailService: MailService) {}
+
 	async findOne(id: string) {
 		return await UserEntity.findOne({
 			where: { id: id },
@@ -27,6 +35,11 @@ export class UserService {
 		user.active = newUser.active;
 		user.role = newUser.role;
 		await user.save();
+		await this.mailService.sendMail(
+			user.email,
+			"Rejestracja na MegaK HeadHunters",
+			studentRegistrationTemplate(),
+		);
 		return user;
 	}
 
