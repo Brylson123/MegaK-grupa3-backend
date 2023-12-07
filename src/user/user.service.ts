@@ -5,7 +5,7 @@ import { ActivateUserDto } from "./dto/activate-user.dto";
 import { ActivateUserResponse } from "../types";
 import { hashPwd, randomSalt } from "../utils/hash-pwd";
 import { MailService } from "../mail/mail.service";
-import { studentRegistrationTemplate } from "src/templates/email/student-registration.template";
+import { studentRegistrationTemplate } from "../templates/email/student-registration.template";
 
 @Injectable()
 export class UserService {

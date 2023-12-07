@@ -10,7 +10,7 @@ import { HrModule } from "../hr/hr.module";
 import { StudentModule } from "../student/student.module";
 import { AuthModule } from "../auth/auth.module";
 import { ValidateCreateStudent } from "../utils/validateCreateStudent";
-import { MailModule } from "src/mail/mail.module";
+import { MailModule } from "../mail/mail.module";
 
 @Module({
 	imports: [HttpModule, UserModule, HrModule, StudentModule, AuthModule, MailModule],
