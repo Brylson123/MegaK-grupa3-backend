@@ -1,3 +1,6 @@
+import { HrToStudentInterface } from "../hr";
+import { UserInterface } from "../user";
+
 export interface StudentInterface {
 	id: string;
 	tel?: string | null;
@@ -18,7 +21,9 @@ export interface StudentInterface {
 	education?: string | null;
 	workExperience: string | null;
 	courses?: string | null;
-	status: string;
+	status: StudentStatus;
+	user: UserInterface;
+	hrs: HrToStudentInterface[];
 }
 
 export interface StudentsAvaibleViewInterface {
@@ -36,6 +41,16 @@ export interface StudentsAvaibleViewInterface {
 	canTakeApprenticeship: string;
 	monthsOfCommercialExp: number;
 }
+
+export type AdminInsertStudent = {
+	token: string;
+	email: string;
+	courseCompletion: number;
+	courseEngagement: number;
+	projectDegree: number;
+	teamProjectDegree: number;
+	bonusProjectUrls: string[];
+};
 
 export enum StudentStatus {
 	ACCESSIBLE,
@@ -74,3 +89,37 @@ export type StudentsToInterviewResponse = {
 	students: StudentsToInterviewInterface[];
 	studentsCount: number;
 };
+
+export type ReservationStudentResponse = {
+	isSuccess: boolean;
+	message: string;
+};
+
+export type DisinterestStudentResponse =
+	| {
+			isSuccess: false;
+			message: string;
+	  }
+	| {
+			isSuccess: boolean;
+	  };
+
+export type StudentResponse = {
+	id?: string;
+	tel?: string | null;
+	firstName?: string;
+	lastName?: string;
+	bio?: string;
+	expectedTypeWork?: ExpectedTypeWork;
+	targetWorkCity?: string;
+	expectedContractType?: ExpectedContractType;
+	expectedSalary?: string;
+	canTakeApprenticeship?: string;
+	monthsOfCommercialExp?: number;
+	education?: string | null;
+	workExperience?: string | null;
+	courses?: string | null;
+	email?: string;
+	isSuccess?: boolean;
+	error?: Error;
+}

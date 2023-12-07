@@ -1,3 +1,5 @@
+import { ActivateUserDto } from "../../user/dto/activate-user.dto";
+
 export interface UserInterface {
 	id: string;
 	email: string;
@@ -14,3 +16,10 @@ export enum UserRole {
 	STUDENT,
 	HR,
 }
+
+export type ActivateUserResponse = {
+	message: string;
+	isSuccess: boolean;
+};
+
+export type ActivateUserRequest = ActivateUserDto;

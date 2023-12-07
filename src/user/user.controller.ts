@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Inject, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Param, Patch, Post } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UserEntity } from "./entity/user.entity";
+import { ActivateUserRequest, ActivateUserResponse } from "../types";
 
 @Controller("user")
 export class UserController {
@@ -15,5 +16,10 @@ export class UserController {
 	@Post("/register")
 	createUser(@Body() newUser: CreateUserDto) {
 		return this.userService.createUser(newUser);
+	}
+
+	@Patch("/activate")
+	activeUser(@Body() active: ActivateUserRequest): Promise<ActivateUserResponse> {
+		return this.userService.activate(active);
 	}
 }

@@ -1,14 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { HrEntity } from "./entities/hr.entity";
 import { UserEntity } from "../user/entity/user.entity";
-import { InsertHr, UserRole } from "../types";
+import { AdminCreateHrResponse, AdminInsertHr, UserRole } from "../types";
 
 @Injectable()
 export class HrService {
-	async createHr(hr: InsertHr) {
+	async createHr(hr: AdminInsertHr): Promise<AdminCreateHrResponse> {
 		const checkUser = await UserEntity.findOne({ where: { email: hr.email } });
 		if (checkUser) {
-			console.log("taki użytkownik istenieje");
+			throw new BadRequestException(`Adres e-mail: "${hr.email}" jest w bazie danych.`);
 		}
 
 		const user = new UserEntity();
@@ -28,7 +28,7 @@ export class HrService {
 		try {
 			newHr.user = user;
 			newHr.company = hr.company;
-			newHr.maxReservationStudent = hr.maxReservationStudent;
+			newHr.maxReservationStudent = hr.maxReservationStudents;
 			newHr.fullName = hr.fullName;
 
 			await newHr.save();
@@ -37,6 +37,10 @@ export class HrService {
 		} catch (e) {
 			return e;
 		}
-		return user.id;
+		return {
+			isSuccess: true,
+			userId: user.id,
+			message: `Dodanie hr ${hr.email} powiodło się`,
+		};
 	}
 }

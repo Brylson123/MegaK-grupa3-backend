@@ -2,3 +2,7 @@
 tester@test.tt;1;1;1;1;"www.tester.tt; www.testerNext.tt; www.testerOneMore.tt"
 tester2@test.tt;2;2;2;2;"www.tester2.tt; www.tester2Next.tt"
 tester3@test.tt;5;5;5;4;"www.tester3.tt; www.tester3Next.tt"
+tester2.test.tt;2;2;2;2;"www.tester2.tt; www.tester2Next.tt"
+tester3@test.tt;5;5;5;4;"www.tester3.tt; www.tester3Next.tt"
+tester4@test.pl;6;5;2;3;www.tester4.tt
+tester5@test.tt;3;2;3;1;www.tester5.tt
