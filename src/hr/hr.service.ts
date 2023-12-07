@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { HrEntity } from "./entities/hr.entity";
 import { UserEntity } from "../user/entity/user.entity";
 import { AdminCreateHrResponse, AdminInsertHr, UserRole } from "../types";
@@ -8,7 +8,7 @@ export class HrService {
 	async createHr(hr: AdminInsertHr): Promise<AdminCreateHrResponse> {
 		const checkUser = await UserEntity.findOne({ where: { email: hr.email } });
 		if (checkUser) {
-			console.log("taki użytkownik istenieje");
+			throw new BadRequestException(`Adres e-mail: "${hr.email}" jest w bazie danych.`);
 		}
 
 		const user = new UserEntity();
