@@ -8,20 +8,20 @@ import { StudentResponse } from "../types";
 @Controller("student")
 export class StudentController {
 	constructor(
-		private studentService: StudentService, 
+		private studentService: StudentService,
 		private readonly mailService: MailService,
-		) {}
+	) {}
+
+	@Get("/email")
+	testEmail() {
+		this.mailService.sendMail;
+	}
 
 	@Get(":id")
 	findOne(@Param("id") id: string): Promise<StudentResponse> {
 		return this.studentService.findOneStudent(id);
 	}
 
-	@Get("/email")
-	testEmail() {
-		return this.mailService.sendMail;
-	}
-	
 	@Put(":id")
 	updateStudent(@Param("id") id: string, @Body() updateStudentDto: UpdateStudentDto) {
 		return this.studentService.updateStudent(id, updateStudentDto);
