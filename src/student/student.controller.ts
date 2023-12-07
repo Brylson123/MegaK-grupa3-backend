@@ -14,7 +14,7 @@ export class StudentController {
 
 	@Get("/email")
 	testEmail() {
-		this.mailService.sendMail;
+		this.mailService.sendMail("rnowosielski77@gmail.com", "test", "testowa wiadomość");
 	}
 
 	@Get(":id")
