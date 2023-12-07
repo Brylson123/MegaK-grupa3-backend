@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { CreateStudentDto, UpdateStudentDto } from "./dto/createStudentDto";
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { UpdateStudentDto } from "./dto/createStudentDto";
 import { StudentEntity } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
 import { ProjectUrl } from "./entities/projectUrl.entity";
@@ -7,20 +7,33 @@ import { PortfolioUrl } from "./entities/portfolioUrl.entity";
 import { ActiveStudentsDto } from "./dto/active-studnets.dto";
 import { config } from "../config/config-database";
 import {
+	AdminInsertStudent,
+	DisinterestStudentResponse,
 	HrToStudentInterface,
+	ReservationStudentResponse,
 	StudentInterface,
 	StudentsAvaibleViewInterface,
 	StudentStatus,
 	StudentsToInterviewInterface,
+	StudentsToInterviewResponse,
+	UserRole,
 	viewAllActiveStudentsResponse,
 } from "../types";
 import { HttpService } from "@nestjs/axios";
 import { HrStudentEntity } from "../hr/entities/hr.student.entity";
 import { UserEntity } from "../user/entity/user.entity";
+import { ReservationStudentDto } from "./dto/reservation-student.dto";
+import { DisinterestStudentDto } from "./dto/disinterest-student.dto";
+import { ValidateCreateStudent } from "../utils/validateCreateStudent";
+
 
 @Injectable()
 export class StudentService {
-	constructor(private httpService: HttpService) {}
+	constructor(
+		private httpService: HttpService,
+		private validateCreateStudent: ValidateCreateStudent,
+	) {}
+
 	private filterAvaibleStudents = (student: StudentInterface[]): StudentsAvaibleViewInterface[] => {
 		return student.map((student) => {
 			const {
@@ -183,7 +196,17 @@ export class StudentService {
 		}
 	}
 
-	async findAllToInterview(req: ActiveStudentsDto, user: UserEntity) {
+	async findAllToInterview(
+		req: ActiveStudentsDto,
+		user: UserEntity,
+	): Promise<StudentsToInterviewResponse> {
+		const hrUser = await UserEntity.findOne({
+			where: {
+				email: user.email,
+			},
+			relations: ["student", "hr"],
+		});
+
 		try {
 			const {
 				pageSize,
@@ -206,11 +229,11 @@ export class StudentService {
 			const [students, count] = await config
 				.getRepository(HrStudentEntity)
 				.createQueryBuilder("hrStudentEntity")
-				.leftJoinAndSelect("hrStudentEntity.student", "studentInfo")
+				.leftJoinAndSelect("hrStudentEntity.student", "studentId")
 				.where(
-					'hrId = :hrId AND courseCompletion >= :courseCompletion AND courseEngagment >= :courseEngagment AND projectDegree >= :projectDegree AND teamProjectDegree >= :teamProjectDegree AND (canTakeApprenticeship = :canTakeApprenticeship OR canTakeApprenticeship = "Tak") AND monthsOfCommercialExp >= :monthsOfCommercialExp AND (expectedSalary BETWEEN :expectedSalaryMin AND :expectedSalaryMax OR expectedSalary IS null)',
+					'hrId = :hrId AND courseCompletion >= :courseCompletion AND courseEngagement >= :courseEngagement AND projectDegree >= :projectDegree AND teamProjectDegree >= :teamProjectDegree AND (canTakeApprenticeship = :canTakeApprenticeship OR canTakeApprenticeship = "Tak") AND monthsOfCommercialExp >= :monthsOfCommercialExp AND (expectedSalary BETWEEN :expectedSalaryMin AND :expectedSalaryMax OR expectedSalary IS null)',
 					{
-						hrId: user.hr.id,
+						hrId: hrUser.hr.id,
 						courseCompletion,
 						courseEngagement,
 						projectDegree,
@@ -226,7 +249,7 @@ export class StudentService {
 						? "hrId = :hr"
 						: '(expectedContractType IN (:expectedContractType) OR expectedContractType = "Bez znaczenia")',
 					{
-						hr: user.hr.id,
+						hr: hrUser.hr.id,
 						expectedContractType,
 					},
 				)
@@ -235,7 +258,7 @@ export class StudentService {
 						? "hrId = :hr"
 						: '(expectedTypeWork IN (:expectedTypeWork) OR expectedTypeWork = "Bez znaczenia" )',
 					{
-						hr: user.hr.id,
+						hr: hrUser.hr.id,
 						expectedTypeWork,
 					},
 				)
@@ -244,7 +267,7 @@ export class StudentService {
 						? "hrId = :hr "
 						: '(MATCH(targetWorkCity) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(expectedTypeWork) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(expectedContractType) AGAINST (":searchTerm*" IN BOOLEAN MODE)OR MATCH(firstName) AGAINST (":searchTerm*" IN BOOLEAN MODE) OR MATCH(lastName) AGAINST (":searchTerm*" IN BOOLEAN MODE))',
 					{
-						hr: user.hr.id,
+						hr: hrUser.hr.id,
 						searchTerm,
 					},
 				)
@@ -277,55 +300,98 @@ export class StudentService {
 		});
 	}
 
-	async createStudent(createStudentDto: CreateStudentDto) {
-		const student = new StudentEntity();
+	async findOneStudent(id: string) {
 		try {
-			student.bio = createStudentDto.bio;
-			student.canTakeApprenticeship = createStudentDto.canTakeApprenticeship;
-			student.courseCompletion = createStudentDto.courseCompletion;
-			student.courseEngagement = createStudentDto.courseEngagement;
-			student.courses = createStudentDto.courses;
-			student.education = createStudentDto.education;
-			student.expectedContractType = createStudentDto.expectedContractType;
-			student.expectedSalary = createStudentDto.expectedSalary;
-			student.expectedTypeWork = createStudentDto.expectedTypeWork;
-			student.firstName = createStudentDto.firstName;
-			if (!!createStudentDto.gitHubUserName) {
-				const { isSuccess, message } = await this.findGithubAvatar(createStudentDto.gitHubUserName);
-				if (isSuccess) {
-					student.gitHubUserName = createStudentDto.gitHubUserName;
-				} else {
-					return message;
-				}
-			}
-			student.lastName = createStudentDto.lastName;
-			student.monthsOfCommercialExp = createStudentDto.monthsOfCommercialExp;
-			student.projectDegree = createStudentDto.projectDegree;
-			student.status = createStudentDto.status;
-			student.targetWorkCity = createStudentDto.targetWorkCity;
-			student.teamProjectDegree = createStudentDto.teamProjectDegree;
-			student.tel = createStudentDto.tel;
-			student.workExperience = createStudentDto.workExperience;
-			await student.save();
+			const student = await StudentEntity.findOne({
+				where: { id: id },
+				relations: {
+					projectUrls: true,
+					portfolioUrls: true,
+				},
+			});
 
-			if (!!createStudentDto.bonusProjectUrls) {
-				for (const url of createStudentDto.bonusProjectUrls) {
+			const {
+				courseCompletion,
+				courseEngagement,
+				projectDegree,
+				teamProjectDegree,
+				status,
+				...restOfStudent
+			} = student;
+
+			const { user } = await StudentEntity.findOne({
+				where: { id: id },
+				relations: {
+					user: true,
+				},
+			});
+			return {
+				...restOfStudent,
+				email: user.email,
+			};
+		} catch (e) {
+			return {
+				isSuccess: false,
+				error: e.message,
+			};
+		}
+	}
+
+	async createStudent(createStudentDto: AdminInsertStudent) {
+		try {
+			const validatedCreateStudentDto =
+				await this.validateCreateStudent.validateData(createStudentDto);
+			const checkUser = await UserEntity.findOne({
+				where: { email: validatedCreateStudentDto.email },
+			});
+			if (checkUser) {
+				console.log("taki użytkownik istenieje");
+			}
+
+			const user = new UserEntity();
+
+			try {
+				user.email = validatedCreateStudentDto.email;
+				user.role = UserRole.STUDENT;
+				user.activeTokenId = validatedCreateStudentDto.token;
+				await user.save();
+			} catch (e) {
+				return {
+					error: e.message,
+				};
+			}
+			const student = new StudentEntity();
+			student.user = user;
+			student.courseCompletion = validatedCreateStudentDto.courseCompletion;
+			student.courseEngagement = validatedCreateStudentDto.courseEngagement;
+			student.projectDegree = validatedCreateStudentDto.projectDegree;
+			student.teamProjectDegree = validatedCreateStudentDto.teamProjectDegree;
+			await student.save();
+			user.student = student;
+			await user.save();
+			if (!!validatedCreateStudentDto.bonusProjectUrls) {
+				for (const url of validatedCreateStudentDto.bonusProjectUrls) {
 					const bonusProjectUrl = new BonusProjectUrl();
 					bonusProjectUrl.student = student;
 					bonusProjectUrl.bonusProjectUrl = url;
 					await bonusProjectUrl.save();
 				}
 			}
-			return student.id;
+			return {
+				isSuccess: true,
+				studentId: student.id,
+			};
 		} catch (e) {
-			return e;
+			return {
+				error: e.message,
+			};
 		}
 	}
 
 	async updateStudent(id: string, updateStudentDto: UpdateStudentDto) {
 		const student = await StudentEntity.findOne({
 			where: { id: id },
-			relations: ["projectUrls", "portfolioUrls", "bonusProjectUrls"],
+			relations: ["projectUrls", "portfolioUrls", "bonusProjectUrls", "user", "hrs"],
 		});
 		try {
 			student.bio = updateStudentDto.bio;
@@ -354,9 +420,10 @@ export class StudentService {
 			student.teamProjectDegree = updateStudentDto.teamProjectDegree;
 			student.tel = updateStudentDto.tel;
 			student.workExperience = updateStudentDto.workExperience;
+			student.user.email = updateStudentDto.email;
 			await student.save();
-
-			if (updateStudentDto.projectUrls.length > 0) {
+			await student.user.save();
+			if (!!updateStudentDto.projectUrls) {
 				await ProjectUrl.remove(student.projectUrls);
 				updateStudentDto.projectUrls.forEach((url) => {
 					const projectUrl = new ProjectUrl();
@@ -365,18 +432,7 @@ export class StudentService {
 					projectUrl.save();
 				});
 			}
-			// await BonusProjectUrl.remove(student.bonusProjectUrls);
-			// if (updateStudentDto.bonusProjectUrls) {
-			// 	await BonusProjectUrl.remove(student.bonusProjectUrls);
-			// 	updateStudentDto.bonusProjectUrls.forEach((url) => {
-			// 		const bonusProjectUrl = new BonusProjectUrl();
-			// 		bonusProjectUrl.student = student;
-			// 		bonusProjectUrl.bonusProjectUrl = url;
-			// 		bonusProjectUrl.save();
-			// 	});
-			// }
-			await PortfolioUrl.remove(student.portfolioUrls);
-			if (updateStudentDto.portfolioUrls) {
+			if (!!updateStudentDto.portfolioUrls) {
 				await PortfolioUrl.remove(student.portfolioUrls);
 				updateStudentDto.portfolioUrls.forEach((url) => {
 					const portfolioUrl = new PortfolioUrl();
@@ -385,9 +441,17 @@ export class StudentService {
 					portfolioUrl.save();
 				});
 			}
-			return `Entity id: ${id} updated.`;
+
+			return {
+				isSuccess: true,
+				message: `Student with id: ${id} has been updated.`,
+				email: student.user.email,
+			};
 		} catch (e) {
-			return e;
+			return {
+				isSuccess: false,
+				error: e.message,
+			};
 		}
 	}
 
@@ -397,6 +461,61 @@ export class StudentService {
 			return `Student id: ${id} has been deleted.`;
 		} catch (e) {
 			return e;
+		}
+	}
+
+	async reservation(
+		{ studentId }: ReservationStudentDto,
+		user: UserEntity,
+	): Promise<ReservationStudentResponse> {
+		const { hr } = user;
+		if (hr.studentInterview.some((el) => el.studentId === studentId)) {
+			throw new BadRequestException('Student już jest dodany w "Do Rozmowy".');
+		}
+		const student = await this.findOne(studentId);
+		const active = student.user.active;
+		const { status } = student;
+		const { maxReservationStudent } = hr;
+		if (maxReservationStudent <= hr.studentInterview.length) {
+			throw new BadRequestException('Nie możesz dodać więcej kursantów "Do Rozmowy.');
+		}
+		if (active === false || status !== StudentStatus.ACCESSIBLE) {
+			throw new BadRequestException("Kursant jest niedostępny.");
+		}
+		try {
+			const hrToStudent = new HrStudentEntity();
+			hrToStudent.hr = hr;
+			hrToStudent.student = student;
+			hrToStudent.reservationTo = new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000);
+			await hrToStudent.save();
+			return {
+				message: 'Dodano kursanta "Do rozmowy"',
+				isSuccess: true,
+			};
+		} catch (e) {
+			throw new BadRequestException('Nie udało się dodać kursanta "Do rozmowy"');
+		}
+	}
+
+	async disinterest({ studentId }: DisinterestStudentDto): Promise<DisinterestStudentResponse> {
+		const student = await this.findOne(studentId);
+
+		if (!student) {
+			return {
+				isSuccess: false,
+				message: "Nie znaleziono takiego kursanta.",
+			};
+		}
+
+		const { affected } = await StudentEntity.update(
+			{ id: student.id, status: StudentStatus.PENDING },
+			{ status: StudentStatus.ACCESSIBLE },
+		);
+
+		if (affected === 0) {
+			return { isSuccess: false };
+		} else {
+			return { isSuccess: true };
 		}
 	}
 }

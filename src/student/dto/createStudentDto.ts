@@ -1,17 +1,66 @@
-import { PartialType } from "@nestjs/mapped-types";
-import { IsEnum, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
-import { ExpectedContractType, ExpectedTypeWork } from "../../types";
+import {
+	IsEmail,
+	IsEnum,
+	IsInt,
+	IsNumber,
+	IsNumberString,
+	IsOptional,
+	IsString,
+	Max,
+	Min,
+} from "class-validator";
+import { ExpectedContractType, ExpectedTypeWork, StudentStatus } from "../../types";
+import { BonusProjectUrl } from "../entities/bonusProjectUrls.entity";
 
 export class CreateStudentDto {
-	id: string;
+	@IsEmail()
+	email: string;
 
 	@IsOptional()
-	@IsNumberString()
+	@IsInt()
+	@Min(0)
+	@Max(5)
+	courseCompletion: number;
+
+	@IsOptional()
+	@IsInt()
+	@Min(0)
+	@Max(5)
+	courseEngagement: number;
+
+	@IsOptional()
+	@IsInt()
+	@Min(0)
+	@Max(5)
+	projectDegree: number;
+
+	@IsOptional()
+	@IsInt()
+	@Min(0)
+	@Max(5)
+	teamProjectDegree: number;
+
+	@IsOptional()
+	// @IsUrl()
+	bonusProjectUrls: string[];
+
+	token: string;
+}
+
+export class UpdateStudentDto {
+	@IsOptional()
+	@IsEmail()
+	email: string;
+
+	@IsOptional()
+	@IsString()
 	tel: string;
 
+	@IsOptional()
 	@IsString()
 	firstName: string;
 
+	@IsOptional()
 	@IsString()
 	lastName: string;
 
@@ -34,7 +83,7 @@ export class CreateStudentDto {
 	@IsOptional()
 	@IsString()
 	gitHubUserName: string;
-	//TODO check if this is correct gitHubUserName
+
 	@IsOptional()
 	@IsString()
 	bio: string;
@@ -77,7 +126,7 @@ export class CreateStudentDto {
 
 	@IsOptional()
 	@IsString()
-	status: string;
+	status: StudentStatus;
 
 	@IsOptional()
 	// @IsUrl()
@@ -91,5 +140,3 @@ export class CreateStudentDto {
 	// @IsUrl()
 	bonusProjectUrls: string[];
 }
-
-export class UpdateStudentDto extends PartialType(CreateStudentDto) {}

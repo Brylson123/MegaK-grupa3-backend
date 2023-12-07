@@ -1,15 +1,22 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, UseGuards } from "@nestjs/common";
 import { HrService } from "./hr.service";
 import {
-	InsertHr,
+	DisinterestStudentResponse,
+	ReservationStudentResponse,
 	StudentInterface,
 	StudentsToInterviewResponse,
+	UserRole,
 	viewAllActiveStudentsResponse,
 } from "../types";
 import { StudentService } from "../student/student.service";
 import { ActiveStudentsDto } from "../student/dto/active-studnets.dto";
 import { UserObj } from "../decorators/user-obj.decorator";
 import { UserEntity } from "../user/entity/user.entity";
+import { ReservationStudentDto } from "../student/dto/reservation-student.dto";
+import { AuthGuard } from "@nestjs/passport";
+import { DisinterestStudentDto } from "../student/dto/disinterest-student.dto";
+import { RolesGuard } from "../guards/roles.guard";
+import { Roles } from "../decorators/roles.decorator";
 
 @Controller("/hr")
 export class HrController {
@@ -17,10 +24,6 @@ export class HrController {
 		private readonly hrService: HrService,
 		private readonly studentService: StudentService,
 	) {}
-	@Post("/addHr")
-	createNewHr(@Body() body: InsertHr) {
-		return this.hrService.createHr(body);
-	}
 
 	@Get("/students")
 	viewAllStudents(@Body() req: ActiveStudentsDto): Promise<viewAllActiveStudentsResponse> {
@@ -28,6 +31,8 @@ export class HrController {
 	}
 
 	@Get("/students/interview")
+	@Roles(UserRole.HR)
+	@UseGuards(AuthGuard("jwt"), RolesGuard)
 	viewAllStudentsToInterview(
 		@Body() req: ActiveStudentsDto,
 		@UserObj() user: UserEntity,
@@ -37,5 +42,20 @@ export class HrController {
 	@Get("/students/cv/:id")
 	showStudentInfo(@Param("id") id: string): Promise<StudentInterface> {
 		return this.studentService.findOne(id);
+	}
+
+	@Patch("/students/reservation")
+	reservation(
+		@Body() ReservationStudentDto: ReservationStudentDto,
+		@UserObj() user: UserEntity,
+	): Promise<ReservationStudentResponse> {
+		return this.studentService.reservation(ReservationStudentDto, user);
+	}
+
+	@Patch("/students/disinterest")
+	disinterest(
+		@Body() disinterestStudentDto: DisinterestStudentDto,
+	): Promise<DisinterestStudentResponse> {
+		return this.studentService.disinterest(disinterestStudentDto);
 	}
 }

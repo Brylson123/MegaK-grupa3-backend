@@ -1,11 +1,7 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class AuthLoginDto {
+export class ReservationStudentDto {
 	@IsString()
 	@IsNotEmpty()
-	email: string;
-
-	@IsString()
-	@IsNotEmpty()
-	pwd: string;
+	studentId: string;
 }

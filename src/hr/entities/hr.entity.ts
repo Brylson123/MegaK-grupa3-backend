@@ -7,7 +7,7 @@ import {
 	OneToOne,
 	PrimaryGeneratedColumn,
 } from "typeorm";
-import { HrInterface, HrToStudentInterface } from "../../types";
+import { HrInterface, HrToStudentInterface, UserInterface } from "../../types";
 import { HrStudentEntity } from "./hr.student.entity";
 import { UserEntity } from "../../user/entity/user.entity";
 
@@ -35,15 +35,13 @@ export class HrEntity extends BaseEntity implements HrInterface {
 
 	@OneToMany(() => HrStudentEntity, (entity) => entity.hr, {
 		onDelete: "CASCADE",
-		onUpdate: "CASCADE",
 	})
 	@JoinColumn()
 	studentInterview: HrToStudentInterface[];
 
 	@OneToOne(() => UserEntity, {
 		onDelete: "CASCADE",
-		onUpdate: "CASCADE",
 	})
 	@JoinColumn()
-	user: UserEntity;
+	user: UserInterface;
 }

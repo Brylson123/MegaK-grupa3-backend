@@ -1,8 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { StudentService } from "./student.service";
-import { CreateStudentDto, UpdateStudentDto } from "./dto/createStudentDto";
+import { UpdateStudentDto } from "./dto/createStudentDto";
 import { StudentEntity } from "./entities/student.entity";
-import { MailService } from "src/mail/mail.service";
+import { MailService } from "../mail/mail.service";
+import { StudentResponse } from "../types";
 
 @Controller("student")
 export class StudentController {
@@ -12,18 +13,8 @@ export class StudentController {
 		) {}
 
 	@Get(":id")
-	findOne(@Param("id") id: string): Promise<StudentEntity> {
-		return this.studentService.findOne(id);
-	}
-
-	@Get("/email")
-	emailTesting() {
-		return this.mailService.sendMail;
-	}
-
-	@Post()
-	createStudent(@Body() createStudentDto: CreateStudentDto) {
-		return this.studentService.createStudent(createStudentDto);
+	findOne(@Param("id") id: string): Promise<StudentResponse> {
+		return this.studentService.findOneStudent(id);
 	}
 
 	@Put(":id")
