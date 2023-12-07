@@ -1,9 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { UserEntity } from "./entity/user.entity";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { MailService } from "../mail/mail.service";
-import { studentRegistrationTemplate } from "../templates/email/student-registration.template";
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { UserEntity } from "./entity/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { ActivateUserDto } from "./dto/activate-user.dto";
