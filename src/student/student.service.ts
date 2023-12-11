@@ -26,7 +26,6 @@ import { ReservationStudentDto } from "./dto/reservation-student.dto";
 import { DisinterestStudentDto } from "./dto/disinterest-student.dto";
 import { ValidateCreateStudent } from "../utils/validateCreateStudent";
 
-
 @Injectable()
 export class StudentService {
 	constructor(
