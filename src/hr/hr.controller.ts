@@ -59,7 +59,7 @@ export class HrController {
 		return this.studentService.reservation(ReservationStudentDto, user);
 	}
 
-	@Patch('/hired')
+	@Patch('/students/hired')
 	@Roles(UserRole.HR)
 	@UseGuards(AuthGuard('jwt'), RolesGuard)
 	hired(
