@@ -123,3 +123,10 @@ export type StudentResponse = {
 	isSuccess?: boolean;
 	error?: Error;
 }
+
+export type HiredStudentResponse = {
+	isSuccess: false;
+	message: string;
+} | {
+	isSuccess: boolean;
+};
