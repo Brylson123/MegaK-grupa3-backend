@@ -122,11 +122,13 @@ export type StudentResponse = {
 	email?: string;
 	isSuccess?: boolean;
 	error?: Error;
-}
-
-export type HiredStudentResponse = {
-	isSuccess: false;
-	message: string;
-} | {
-	isSuccess: boolean;
 };
+
+export type HiredStudentResponse =
+	| {
+			isSuccess: false;
+			message: string;
+	  }
+	| {
+			isSuccess: boolean;
+	  };

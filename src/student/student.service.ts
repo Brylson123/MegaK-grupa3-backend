@@ -8,7 +8,8 @@ import { ActiveStudentsDto } from "./dto/active-studnets.dto";
 import { config } from "../config/config-database";
 import {
 	AdminInsertStudent,
-	DisinterestStudentResponse, HiredStudentResponse,
+	DisinterestStudentResponse,
+	HiredStudentResponse,
 	HrToStudentInterface,
 	ReservationStudentResponse,
 	StudentInterface,
@@ -25,10 +26,8 @@ import { UserEntity } from "../user/entity/user.entity";
 import { ReservationStudentDto } from "./dto/reservation-student.dto";
 import { DisinterestStudentDto } from "./dto/disinterest-student.dto";
 import { ValidateCreateStudent } from "../utils/validateCreateStudent";
-import {HiredStudentDto} from "./dto/hired-student";
-import {MailService} from "../mail/mail.service";
-
-
+import { HiredStudentDto } from "./dto/hired-student";
+import { MailService } from "../mail/mail.service";
 
 @Injectable()
 export class StudentService {
@@ -529,38 +528,35 @@ export class StudentService {
 		if (!student) {
 			return {
 				isSuccess: false,
-				message: 'Nie znaleziono takiego kursanta.',
+				message: "Nie znaleziono takiego kursanta.",
 			};
 		}
 
 		if (student.status === StudentStatus.EMPLOYED) {
 			return {
 				isSuccess: false,
-				message: 'Kursant nie jest w procesie o zatrudnienie.',
+				message: "Kursant nie jest w procesie o zatrudnienie.",
 			};
 		}
 
 		const { affected } = await StudentEntity.update(
-			{ id: student.id, status: StudentStatus.PENDING 	},
+			{ id: student.id, status: StudentStatus.PENDING },
 			{ status: StudentStatus.EMPLOYED },
 		);
-
-
 
 		if (affected === 0) {
 			return { isSuccess: false };
 		} else {
 			await UserEntity.update(
 				{ id: student.user.id, role: UserRole.STUDENT, active: true },
-				{ active: false }
-			)
+				{ active: false },
+			);
 			const studentEmail = student.user.email;
 			await this.mailService.sendMail(
 				studentEmail,
-				'Zostałeś zatrudniony!',
+				"Zostałeś zatrudniony!",
 				`Gratulacje! Zostałeś zatrudniony w ${hr.company}`,
 			);
 		}
 	}
-
 }
