@@ -9,6 +9,7 @@ import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
 import { AdminInsertStudent, CreateHrResponse, UserRole } from "../types";
 import { CreateStudentDto } from "../student/dto/createStudentDto";
+import { MailService } from "../mail.service";
 
 @Injectable()
 export class AdminService {
@@ -16,6 +17,7 @@ export class AdminService {
 		private studentService: StudentService,
 		private hrService: HrService,
 		private authService: AuthService,
+		private mailService: MailService,
 	) {}
 
 	parseCSV = (csvFile: string): Promise<CreateStudentDto[]> => {
@@ -107,7 +109,11 @@ export class AdminService {
 				token: activationToken.accessToken,
 			});
 			if (response.isSuccess) {
-				console.log(response);
+				this.mailService.sendMail(
+					data.email,
+					"Rejestracja użytkownika",
+					`Aktywuj konto api.radek.smallhost.pl/user/activate/${response.userId}/${activationToken.accessToken}/`,
+				);
 			}
 			return {
 				isSuccess: true,
