@@ -18,8 +18,8 @@ export class AdminService {
 		private authService: AuthService,
 	) {}
 
-	parseCSV = (): Promise<CreateStudentDto[]> => {
-		const csvFile = "src/data/dummyCSV.csv";
+	parseCSV = (csvFile: string): Promise<CreateStudentDto[]> => {
+		// const csvFile = "src/data/dummyCSV.csv";
 		const results = [];
 
 		return new Promise((resolve, reject) => {
@@ -66,10 +66,10 @@ export class AdminService {
 	};
 
 	@UsePipes(new ValidationPipe())
-	async addStudents() {
+	async addStudents(csvFile?: string) {
 		const createdStudents = [];
 		const errors = [];
-		const students: CreateStudentDto[] = await this.parseCSV();
+		const students: CreateStudentDto[] = await this.parseCSV(csvFile);
 		try {
 			for (const student of students) {
 				const activationToken = this.authService.createToken(uuid());

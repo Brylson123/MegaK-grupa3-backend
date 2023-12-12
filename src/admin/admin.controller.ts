@@ -1,10 +1,13 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, FileTypeValidator, ParseFilePipe, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { AdminService } from "./admin.service";
 import { CreateHrDto } from "../hr/dto/create-hr.dto";
 import { CreateHrResponse } from "../types";
 import { MailService } from "../mail/mail.service";
 import { UserService } from "../user/user.service";
-import { ActivateUserDto } from "../user/dto/activate-user.dto";
+import { Express } from "express";
+import { diskStorage } from "multer";
+import { storageDir } from "../utils/storage";
 
 @Controller("/admin")
 export class AdminController {
@@ -14,9 +17,24 @@ export class AdminController {
 		private readonly mailService: MailService,
 	) {}
 
-	@Post("/addStudents")
-	addStudents() {
-		return this.adminService.addStudents();
+	@Post("/addStudents")	
+	@UseInterceptors(
+		FileInterceptor('file', {
+			storage: diskStorage({
+				destination: storageDir(),
+				filename: (req, file, callback) => {
+					const filename = file.originalname;
+					callback(null, filename);
+				}
+			})
+		})
+		)
+	uploadFile(@UploadedFile(
+		new ParseFilePipe({
+			validators: [new FileTypeValidator({fileType: 'text/csv'})],
+		})
+	) file: Express.Multer.File) {
+		return this.adminService.addStudents(file.path);
 	}
 
 	@Post("/activateUser")
