@@ -1,13 +1,12 @@
-import { Injectable, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CreateHrDto } from "../hr/dto/create-hr.dto";
 import { createReadStream } from "fs";
 import { StudentService } from "../student/student.service";
-import { UserService } from "../user/user.service";
 import { HrService } from "../hr/hr.service";
 import { AuthService } from "../auth/auth.service";
 import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
-import { AdminInsertStudent, CreateHrResponse, UserRole } from "../types";
+import { CreateHrResponse } from "../types";
 import { CreateStudentDto } from "../student/dto/createStudentDto";
 
 @Injectable()
@@ -65,7 +64,6 @@ export class AdminService {
 		});
 	};
 
-	@UsePipes(new ValidationPipe())
 	async addStudents(csvFile?: string) {
 		const createdStudents = [];
 		const errors = [];
@@ -98,7 +96,7 @@ export class AdminService {
 			};
 		}
 	}
-	@UsePipes(new ValidationPipe())
+
 	async addHr(data: CreateHrDto): Promise<CreateHrResponse> {
 		const activationToken = this.authService.createToken(uuid());
 		try {
