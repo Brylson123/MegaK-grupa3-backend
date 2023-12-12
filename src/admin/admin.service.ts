@@ -85,7 +85,7 @@ export class AdminService {
 			}
 			return {
 				isSuccess: true,
-				cretedStudents: createdStudents.length,
+				createdStudents: createdStudents.length,
 				ids: createdStudents,
 				errors: errors,
 			};
