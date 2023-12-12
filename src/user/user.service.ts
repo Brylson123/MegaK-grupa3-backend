@@ -6,7 +6,6 @@ import { ActivateUserResponse } from "../types";
 import { hashPwd, randomSalt } from "../utils/hash-pwd";
 import { MailService } from "../mail/mail.service";
 import { studentRegistrationTemplate } from "../templates/email/student-registration.template";
-import { EMPTY_OBSERVER } from "rxjs/internal/Subscriber";
 
 @Injectable()
 export class UserService {
@@ -24,7 +23,7 @@ export class UserService {
 
 	async finOneByEmail(email: string) {
 		return await UserEntity.findOne({
-			where: {email: email},
+			where: { email: email },
 		});
 	}
 
@@ -82,19 +81,23 @@ export class UserService {
 	}
 
 	async sendActivationEmail(data: any) {
-		if(!!data.email) {
+		if (!!data.email) {
 			try {
 				const user = await this.finOneByEmail(data.email);
-				this.mailService.sendMail(user.email, "Aktywuj konto", `api.radek.smallhost.pl/user/activate/${user.id}/${user.activeTokenId}`);
+				this.mailService.sendMail(
+					user.email,
+					"Aktywuj konto",
+					`api.radek.smallhost.pl/user/activate/${user.id}/${user.activeTokenId}`,
+				);
 
 				return {
 					isSuccess: true,
-				}
+				};
 			} catch (e) {
 				return {
 					isSuccess: false,
 					error: e.message,
-				}
+				};
 			}
 		}
 	}

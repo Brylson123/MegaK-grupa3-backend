@@ -1,13 +1,25 @@
-import { Body, Controller, FileTypeValidator, ParseFilePipe, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	FileTypeValidator,
+	ParseFilePipe,
+	Post,
+	UploadedFile,
+	UseGuards,
+	UseInterceptors,
+} from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AdminService } from "./admin.service";
 import { CreateHrDto } from "../hr/dto/create-hr.dto";
-import { CreateHrResponse } from "../types";
+import { CreateHrResponse, UserRole } from "../types";
 import { MailService } from "../mail/mail.service";
 import { UserService } from "../user/user.service";
 import { Express } from "express";
 import { diskStorage } from "multer";
 import { storageDir } from "../utils/storage";
+import { Roles } from "../decorators/roles.decorator";
+import { AuthGuard } from "@nestjs/passport";
+import { RolesGuard } from "../guards/roles.guard";
 
 @Controller("/admin")
 export class AdminController {
@@ -17,23 +29,28 @@ export class AdminController {
 		private readonly mailService: MailService,
 	) {}
 
-	@Post("/addStudents")	
+	@Post("/addStudents")
+	@Roles(UserRole.ADMIN)
+	@UseGuards(AuthGuard("jwt"), RolesGuard)
 	@UseInterceptors(
-		FileInterceptor('file', {
+		FileInterceptor("file", {
 			storage: diskStorage({
 				destination: storageDir(),
 				filename: (req, file, callback) => {
 					const filename = file.originalname;
 					callback(null, filename);
-				}
-			})
-		})
+				},
+			}),
+		}),
+	)
+	uploadFile(
+		@UploadedFile(
+			new ParseFilePipe({
+				validators: [new FileTypeValidator({ fileType: "text/csv" })],
+			}),
 		)
-	uploadFile(@UploadedFile(
-		new ParseFilePipe({
-			validators: [new FileTypeValidator({fileType: 'text/csv'})],
-		})
-	) file: Express.Multer.File) {
+		file: Express.Multer.File,
+	) {
 		return this.adminService.addStudents(file.path);
 	}
 
@@ -43,6 +60,8 @@ export class AdminController {
 	}
 
 	@Post("/addHr")
+	@Roles(UserRole.ADMIN)
+	@UseGuards(AuthGuard("jwt"), RolesGuard)
 	addHr(@Body() data: CreateHrDto): Promise<CreateHrResponse> {
 		return this.adminService.addHr(data);
 	}
