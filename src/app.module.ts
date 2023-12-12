@@ -7,9 +7,9 @@ import { StudentModule } from "./student/student.module";
 import { HrModule } from "./hr/hr.module";
 import { MailModule } from './mail/mail.module';
 import { AdminModule } from "./admin/admin.module";
-@Module({
-	imports: [DatabaseModule, StudentModule, UserModule, HrModule, AdminModule, MailModule],
 
+@Module({
+	imports: [DatabaseModule, StudentModule, UserModule, HrModule, MailModule, AdminModule],
 	controllers: [AppController],
 	providers: [AppService],
 })

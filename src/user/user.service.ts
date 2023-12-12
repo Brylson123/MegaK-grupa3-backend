@@ -1,19 +1,16 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { UserEntity } from "./entity/user.entity";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { MailService } from "../mail/mail.service";
-import { studentRegistrationTemplate } from "../templates/email/student-registration.template";
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { UserEntity } from "./entity/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { ActivateUserDto } from "./dto/activate-user.dto";
 import { ActivateUserResponse } from "../types";
 import { hashPwd, randomSalt } from "../utils/hash-pwd";
-
+import { MailService } from "../mail/mail.service";
+import { studentRegistrationTemplate } from "../templates/email/student-registration.template";
+import { EMPTY_OBSERVER } from "rxjs/internal/Subscriber";
 
 @Injectable()
 export class UserService {
-	constructor(@Inject(MailService) private mailService: MailService) {}
+	constructor(@Inject(MailService) private readonly mailService: MailService) {}
 
 	async findOne(id: string) {
 		return await UserEntity.findOne({
@@ -22,6 +19,12 @@ export class UserService {
 				student: true,
 				hr: true,
 			},
+		});
+	}
+
+	async finOneByEmail(email: string) {
+		return await UserEntity.findOne({
+			where: {email: email},
 		});
 	}
 
@@ -76,5 +79,23 @@ export class UserService {
 			message: "Użytkownik został aktywowany",
 			isSuccess: true,
 		};
+	}
+
+	async sendActivationEmail(data: any) {
+		if(!!data.email) {
+			try {
+				const user = await this.finOneByEmail(data.email);
+				this.mailService.sendMail(user.email, "Aktywuj konto", `api.radek.smallhost.pl/user/activate/${user.id}/${user.activeTokenId}`);
+
+				return {
+					isSuccess: true,
+				}
+			} catch (e) {
+				return {
+					isSuccess: false,
+					error: e.message,
+				}
+			}
+		}
 	}
 }
