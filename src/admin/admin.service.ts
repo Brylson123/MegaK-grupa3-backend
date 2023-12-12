@@ -107,10 +107,10 @@ export class AdminService {
 				token: activationToken.accessToken,
 			});
 			if (response.isSuccess) {
-				this.mailService.sendMail(
+				await this.mailService.sendMail(
 					data.email,
 					"Rejestracja użytkownika",
-					`Aktywuj konto api.radek.smallhost.pl/user/activate/${response.userId}/${activationToken.accessToken}/`,
+					`Aktywuj konto api.radek.smallhost.pl/user/activate/${response.userId}/${activationToken.accessToken}`,
 				);
 			}
 			return {
