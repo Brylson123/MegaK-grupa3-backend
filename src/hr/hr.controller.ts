@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Patch, UseGuards } from "@nestjs/common";
 import { HrService } from "./hr.service";
 import {
 	DisinterestStudentResponse,
+	HiredStudentResponse,
 	ReservationStudentResponse,
 	StudentInterface,
 	StudentsToInterviewResponse,
@@ -17,6 +18,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { DisinterestStudentDto } from "../student/dto/disinterest-student.dto";
 import { RolesGuard } from "../guards/roles.guard";
 import { Roles } from "../decorators/roles.decorator";
+import { HiredStudentDto } from "../student/dto/hired-student";
 
 @Controller("/hr")
 export class HrController {
@@ -26,6 +28,8 @@ export class HrController {
 	) {}
 
 	@Get("/students")
+	@Roles(UserRole.HR)
+	@UseGuards(AuthGuard("jwt"), RolesGuard)
 	viewAllStudents(@Body() req: ActiveStudentsDto): Promise<viewAllActiveStudentsResponse> {
 		return this.studentService.viewAllActiveStudents(req);
 	}
@@ -40,11 +44,15 @@ export class HrController {
 		return this.studentService.findAllToInterview(req, user);
 	}
 	@Get("/students/cv/:id")
+	@Roles(UserRole.HR)
+	@UseGuards(AuthGuard("jwt"), RolesGuard)
 	showStudentInfo(@Param("id") id: string): Promise<StudentInterface> {
 		return this.studentService.findOne(id);
 	}
 
 	@Patch("/students/reservation")
+	@Roles(UserRole.HR)
+	@UseGuards(AuthGuard("jwt"), RolesGuard)
 	reservation(
 		@Body() ReservationStudentDto: ReservationStudentDto,
 		@UserObj() user: UserEntity,
@@ -52,7 +60,18 @@ export class HrController {
 		return this.studentService.reservation(ReservationStudentDto, user);
 	}
 
+	@Patch("/students/hired")
+	@Roles(UserRole.HR)
+	@UseGuards(AuthGuard("jwt"), RolesGuard)
+	hired(
+		@Body() hiredStudentDto: HiredStudentDto,
+		@UserObj() user: UserEntity,
+	): Promise<HiredStudentResponse> {
+		return this.studentService.hired(user, hiredStudentDto);
+	}
 	@Patch("/students/disinterest")
+	@Roles(UserRole.HR)
+	@UseGuards(AuthGuard("jwt"), RolesGuard)
 	disinterest(
 		@Body() disinterestStudentDto: DisinterestStudentDto,
 	): Promise<DisinterestStudentResponse> {

@@ -2,7 +2,7 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { DatabaseExceptionFilter } from "./filters/database-exceptionFilter";
-import 'reflect-metadata';
+import "reflect-metadata";
 import * as cookieParser from "cookie-parser";
 
 async function bootstrap() {
@@ -12,6 +12,7 @@ async function bootstrap() {
 		new ValidationPipe({
 			whitelist: true,
 			forbidNonWhitelisted: true,
+			transform: true,
 		}),
 	);
 	app.useGlobalFilters(new DatabaseExceptionFilter());

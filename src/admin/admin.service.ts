@@ -1,14 +1,14 @@
-import { Injectable, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CreateHrDto } from "../hr/dto/create-hr.dto";
 import { createReadStream } from "fs";
 import { StudentService } from "../student/student.service";
-import { UserService } from "../user/user.service";
 import { HrService } from "../hr/hr.service";
 import { AuthService } from "../auth/auth.service";
 import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
-import { AdminInsertStudent, CreateHrResponse, UserRole } from "../types";
+import { CreateHrResponse } from "../types";
 import { CreateStudentDto } from "../student/dto/createStudentDto";
+import { MailService } from "../mail.service";
 
 @Injectable()
 export class AdminService {
@@ -16,10 +16,11 @@ export class AdminService {
 		private studentService: StudentService,
 		private hrService: HrService,
 		private authService: AuthService,
+		private mailService: MailService,
 	) {}
 
-	parseCSV = (): Promise<CreateStudentDto[]> => {
-		const csvFile = "src/data/dummyCSV.csv";
+	parseCSV = (csvFile: string): Promise<CreateStudentDto[]> => {
+		// const csvFile = "src/data/dummyCSV.csv";
 		const results = [];
 
 		return new Promise((resolve, reject) => {
@@ -65,11 +66,10 @@ export class AdminService {
 		});
 	};
 
-	@UsePipes(new ValidationPipe())
-	async addStudents() {
+	async addStudents(csvFile?: string) {
 		const createdStudents = [];
 		const errors = [];
-		const students: CreateStudentDto[] = await this.parseCSV();
+		const students: CreateStudentDto[] = await this.parseCSV(csvFile);
 		try {
 			for (const student of students) {
 				const activationToken = this.authService.createToken(uuid());
@@ -87,7 +87,7 @@ export class AdminService {
 			}
 			return {
 				isSuccess: true,
-				cretedStudents: createdStudents.length,
+				createdStudents: createdStudents.length,
 				ids: createdStudents,
 				errors: errors,
 			};
@@ -98,7 +98,7 @@ export class AdminService {
 			};
 		}
 	}
-	@UsePipes(new ValidationPipe())
+
 	async addHr(data: CreateHrDto): Promise<CreateHrResponse> {
 		const activationToken = this.authService.createToken(uuid());
 		try {
@@ -107,7 +107,11 @@ export class AdminService {
 				token: activationToken.accessToken,
 			});
 			if (response.isSuccess) {
-				console.log(response);
+				await this.mailService.sendMail(
+					data.email,
+					"Rejestracja użytkownika",
+					`Aktywuj konto api.radek.smallhost.pl/user/activate/${response.userId}/${activationToken.accessToken}`,
+				);
 			}
 			return {
 				isSuccess: true,

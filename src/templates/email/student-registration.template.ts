@@ -14,5 +14,5 @@ export const studentRegistrationTemplate = () => {
       First login password:<br/>
     </p>
   </div>
-	`
-}
+	`;
+};
