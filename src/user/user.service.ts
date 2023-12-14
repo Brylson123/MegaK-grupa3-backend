@@ -2,10 +2,12 @@ import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { UserEntity } from "./entity/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { ActivateUserDto } from "./dto/activate-user.dto";
-import { ActivateUserResponse } from "../types";
+import { ActivateUserResponse, RecoverPasswordResponse } from "../types";
 import { hashPwd, randomSalt } from "../utils/hash-pwd";
 import { MailService } from "../mail/mail.service";
 import { studentRegistrationTemplate } from "../templates/email/student-registration.template";
+import { RecoverPasswordDto } from "./dto/recover-password.dto";
+import { generateRandomPassword } from "../utils/random-pwd";
 
 @Injectable()
 export class UserService {
@@ -70,6 +72,34 @@ export class UserService {
 
 		return {
 			message: "Użytkownik został aktywowany",
+			isSuccess: true,
+		};
+	}
+
+	async recover(recover: RecoverPasswordDto): Promise<RecoverPasswordResponse> {
+		const user = await UserEntity.findOne({
+			where: {
+				email: recover.email,
+			},
+		});
+
+		if (!user) {
+			return {
+				isSuccess: false,
+			};
+		}
+
+		const password = generateRandomPassword();
+		user.pwdHash = hashPwd(password, user.salt);
+		await user.save();
+
+		await this.mailService.sendMail(
+			recover.email,
+			"odzyskiwanie hasła do konta:",
+			`<p>Twoje nowe hasło to:${password}</p>`,
+		);
+
+		return {
 			isSuccess: true,
 		};
 	}
