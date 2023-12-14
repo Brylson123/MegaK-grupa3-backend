@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { UpdateStudentDto } from "./dto/createStudentDto";
+import { CreateStudentDto, UpdateStudentDto } from "./dto/createStudentDto";
 import { StudentEntity } from "./entities/student.entity";
 import { BonusProjectUrl } from "./entities/bonusProjectUrls.entity";
 import { ProjectUrl } from "./entities/projectUrl.entity";

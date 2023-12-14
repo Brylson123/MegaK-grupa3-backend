@@ -3,6 +3,7 @@ import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UserEntity } from "./entity/user.entity";
 import { ActivateUserRequest, ActivateUserResponse } from "../types";
+import { StudentEntity } from "src/student/entities/student.entity";
 
 @Controller("user")
 export class UserController {
@@ -22,4 +23,4 @@ export class UserController {
 	activeUser(@Body() active: ActivateUserRequest): Promise<ActivateUserResponse> {
 		return this.userService.activate(active);
 	}
-}
+} 

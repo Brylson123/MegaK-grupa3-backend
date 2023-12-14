@@ -65,12 +65,10 @@ export class AdminService {
 		});
 	};
 
-	@UsePipes(new ValidationPipe())
-	async addStudents(csvFile?: string) {
-		const createdStudents = [];
-		const errors = [];
-		const students: CreateStudentDto[] = await this.parseCSV(csvFile);
+	createStudentsFromArray = async (students: CreateStudentDto[]) => {
 		try {
+			const errors = [];
+			const createdStudents = [];
 			for (const student of students) {
 				const activationToken = this.authService.createToken(uuid());
 				const response = await this.studentService.createStudent({
@@ -98,6 +96,17 @@ export class AdminService {
 			};
 		}
 	}
+
+	createStudentsFromJson(data: CreateStudentDto[]) {
+		return this.createStudentsFromArray(data);
+	}
+
+	@UsePipes(new ValidationPipe())
+	async addStudents(csvFile?: string) {
+		const students: CreateStudentDto[] = await this.parseCSV(csvFile);
+		return this.createStudentsFromArray(students);
+	}
+
 	@UsePipes(new ValidationPipe())
 	async addHr(data: CreateHrDto): Promise<CreateHrResponse> {
 		const activationToken = this.authService.createToken(uuid());
