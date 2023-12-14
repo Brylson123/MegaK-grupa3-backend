@@ -21,12 +21,6 @@ export class UserService {
 		});
 	}
 
-	async finOneByEmail(email: string) {
-		return await UserEntity.findOne({
-			where: { email: email },
-		});
-	}
-
 	async createUser(newUser: CreateUserDto): Promise<UserEntity> {
 		const user = new UserEntity();
 		user.email = newUser.email;
@@ -78,27 +72,5 @@ export class UserService {
 			message: "Użytkownik został aktywowany",
 			isSuccess: true,
 		};
-	}
-
-	async sendActivationEmail(data: any) {
-		if (!!data.email) {
-			try {
-				const user = await this.finOneByEmail(data.email);
-				this.mailService.sendMail(
-					user.email,
-					"Aktywuj konto",
-					`api.radek.smallhost.pl/user/activate/${user.id}/${user.activeTokenId}`,
-				);
-
-				return {
-					isSuccess: true,
-				};
-			} catch (e) {
-				return {
-					isSuccess: false,
-					error: e.message,
-				};
-			}
-		}
 	}
 }
