@@ -54,11 +54,6 @@ export class AdminController {
 		return this.adminService.addStudents(file.path);
 	}
 
-	@Post("/activateUser")
-	activateUser(@Body() data: JSON) {
-		return this.userService.sendActivationEmail(data);
-	}
-
 	@Post("/addHr")
 	@Roles(UserRole.ADMIN)
 	@UseGuards(AuthGuard("jwt"), RolesGuard)
