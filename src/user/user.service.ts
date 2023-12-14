@@ -14,13 +14,15 @@ export class UserService {
 	constructor(@Inject(MailService) private readonly mailService: MailService) {}
 
 	async findOne(id: string) {
-		return await UserEntity.findOne({
+		const user = await UserEntity.findOne({
 			where: { id: id },
 			relations: {
 				student: true,
 				hr: true,
 			},
 		});
+		const {activeTokenId, currentTokenId, pwdHash, salt, ...restOfUser} = user;
+		return restOfUser;
 	}
 
 	async createUser(newUser: CreateUserDto): Promise<UserEntity> {

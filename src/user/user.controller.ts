@@ -5,6 +5,7 @@ import { UserEntity } from "./entity/user.entity";
 import {
 	ActivateUserRequest,
 	ActivateUserResponse,
+	FinOneUserResponse,
 	RecoverPasswordRequest,
 	RecoverPasswordResponse,
 } from "../types";
@@ -14,7 +15,7 @@ export class UserController {
 	constructor(@Inject(UserService) private userService: UserService) {}
 
 	@Get("/:id")
-	findOne(@Param("id") id: string): Promise<UserEntity> {
+	findOne(@Param("id") id: string): Promise<FinOneUserResponse> {
 		return this.userService.findOne(id);
 	}
 
