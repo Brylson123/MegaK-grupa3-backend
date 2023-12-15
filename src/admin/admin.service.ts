@@ -97,6 +97,7 @@ export class AdminService {
 				});
 				if (response.isSuccess) {
 					console.log(response);
+					await this.mailService.sendMail(student.email, response.studentId, activationToken.accessToken);
 					createdStudents.push(response.studentId);
 				} else {
 					console.log(response);
