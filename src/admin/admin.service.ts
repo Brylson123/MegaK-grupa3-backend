@@ -84,11 +84,10 @@ export class AdminService {
 		});
 	};
 
-	async addStudents(csvFile?: string) {
-		const createdStudents = [];
-		const errors = [];
-		const students: CreateStudentDto[] = await this.parseCSV(csvFile);
+	createStudentsFromArray = async (students: CreateStudentDto[]) => {
 		try {
+			const errors = [];
+			const createdStudents = [];
 			for (const student of students) {
 				const activationToken = this.authService.createToken(uuid());
 				const response = await this.studentService.createStudent({
@@ -106,7 +105,7 @@ export class AdminService {
 			}
 			return {
 				isSuccess: true,
-				createdStudents: createdStudents.length,
+				cretedStudents: createdStudents.length,
 				ids: createdStudents,
 				errors: errors,
 			};
@@ -116,6 +115,15 @@ export class AdminService {
 				message: e.message,
 			};
 		}
+	}
+
+	createStudentsFromJson(data: CreateStudentDto[]) {
+		return this.createStudentsFromArray(data);
+	}
+
+	async addStudents(csvFile?: string) {
+		const students: CreateStudentDto[] = await this.parseCSV(csvFile);
+		return this.createStudentsFromArray(students);
 	}
 
 	async addHr(data: CreateHrDto): Promise<CreateHrResponse> {

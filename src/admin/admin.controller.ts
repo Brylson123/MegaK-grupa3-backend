@@ -20,6 +20,7 @@ import { storageDir } from "../utils/storage";
 import { Roles } from "../decorators/roles.decorator";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../guards/roles.guard";
+import { CreateStudentDto } from "../student/dto/createStudentDto";
 
 @Controller("/admin")
 export class AdminController {
@@ -52,6 +53,11 @@ export class AdminController {
 		file: Express.Multer.File,
 	) {
 		return this.adminService.addStudents(file.path);
+	}
+
+	@Post("/addStudents/json")
+	addStudentsFromJson(@Body() data: CreateStudentDto[]) {
+		return this.adminService.createStudentsFromJson(data);
 	}
 
 	@Post("/addHr")
