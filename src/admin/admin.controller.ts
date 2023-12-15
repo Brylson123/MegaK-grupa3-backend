@@ -12,8 +12,6 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { AdminService } from "./admin.service";
 import { CreateHrDto } from "../hr/dto/create-hr.dto";
 import { CreateHrResponse, UserRole } from "../types";
-import { MailService } from "../mail/mail.service";
-import { UserService } from "../user/user.service";
 import { Express } from "express";
 import { diskStorage } from "multer";
 import { storageDir } from "../utils/storage";
@@ -24,11 +22,7 @@ import { CreateStudentDto } from "../student/dto/createStudentDto";
 
 @Controller("/admin")
 export class AdminController {
-	constructor(
-		private adminService: AdminService,
-		private userService: UserService,
-		private readonly mailService: MailService,
-	) {}
+	constructor(private adminService: AdminService) {}
 
 	@Post("/addStudents")
 	@Roles(UserRole.ADMIN)
@@ -56,6 +50,8 @@ export class AdminController {
 	}
 
 	@Post("/addStudents/json")
+	@Roles(UserRole.ADMIN)
+	@UseGuards(AuthGuard("jwt"), RolesGuard)
 	addStudentsFromJson(@Body() data: CreateStudentDto[]) {
 		return this.adminService.createStudentsFromJson(data);
 	}
