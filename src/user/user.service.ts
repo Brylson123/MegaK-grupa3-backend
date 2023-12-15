@@ -2,17 +2,18 @@ import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { UserEntity } from "./entity/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { ActivateUserDto } from "./dto/activate-user.dto";
-import { ActivateUserResponse, RecoverPasswordResponse } from "../types";
+import { ActivateUserResponse, ChangePwdResponse, RecoverPasswordResponse } from "../types";
 import { hashPwd, randomSalt } from "../utils/hash-pwd";
 import { MailService } from "../mail/mail.service";
 import { studentRegistrationTemplate } from "../templates/email/student-registration.template";
 import { RecoverPasswordDto } from "./dto/recover-password.dto";
 import { generateRandomPassword } from "../utils/random-pwd";
+import { ChangePwdDto } from "./dto/change-password.dto";
 
 @Injectable()
 export class UserService {
 	constructor(@Inject(MailService) private readonly mailService: MailService) {}
-
+	
 	async findOne(id: string) {
 		const user = await UserEntity.findOne({
 			where: { id: id },
@@ -39,7 +40,7 @@ export class UserService {
 			user.email,
 			"Rejestracja na MegaK HeadHunters",
 			studentRegistrationTemplate(),
-		);
+			);
 		return user;
 	}
 
@@ -94,7 +95,7 @@ export class UserService {
 		const password = generateRandomPassword();
 		user.pwdHash = hashPwd(password, user.salt);
 		await user.save();
-
+		
 		await this.mailService.sendMail(
 			recover.email,
 			"odzyskiwanie hasła do konta:",
@@ -104,5 +105,29 @@ export class UserService {
 		return {
 			isSuccess: true,
 		};
+	}
+
+async changePwd(data: ChangePwdDto): Promise<ChangePwdResponse> {
+		try {
+			const userToChangePwd = await UserEntity.findOne({ where: { id: data.userId } });
+			const password = hashPwd(data.oldPwd, userToChangePwd.salt);
+			if (userToChangePwd.pwdHash !== password) {
+				return {
+					isSuccess: false,
+					message: "Niepoprawne dane logowania!",
+				};
+			}
+			userToChangePwd.salt = randomSalt(128);
+			userToChangePwd.pwdHash = hashPwd(data.newPwd, userToChangePwd.salt);
+			userToChangePwd.save();
+			return {
+				isSuccess: true,
+			};
+		} catch (e) {
+			return {
+				isSuccess: false,
+				message: e.message,
+			};
+		}
 	}
 }
