@@ -5,7 +5,7 @@ import { v4 as uuid } from "uuid";
 import { sign } from "jsonwebtoken";
 import { JwtPayload } from "./jwt.strategy";
 import { UserEntity } from "../user/entity/user.entity";
-import { AuthLoginRequest } from "../types";
+import { AuthLoginRequest} from "../types";
 import { UserRole } from "../types";
 
 @Injectable()

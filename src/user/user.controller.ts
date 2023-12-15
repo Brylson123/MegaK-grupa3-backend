@@ -5,10 +5,12 @@ import { UserEntity } from "./entity/user.entity";
 import {
 	ActivateUserRequest,
 	ActivateUserResponse,
+	ChangePwdResponse,
 	FinOneUserResponse,
 	RecoverPasswordRequest,
 	RecoverPasswordResponse,
 } from "../types";
+import { ChangePwdDto } from "./dto/change-password.dto";
 
 @Controller("user")
 export class UserController {
@@ -27,6 +29,11 @@ export class UserController {
 	@Patch("/activate")
 	activeUser(@Body() active: ActivateUserRequest): Promise<ActivateUserResponse> {
 		return this.userService.activate(active);
+	}
+
+	@Patch("/changePwd")
+	async changePwd(@Body() data: ChangePwdDto): Promise<ChangePwdResponse> {
+		return this.userService.changePwd(data); 
 	}
 
 	@Post("/recover")
