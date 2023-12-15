@@ -8,7 +8,7 @@ import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
 import { CreateHrResponse } from "../types";
 import { CreateStudentDto } from "../student/dto/createStudentDto";
-import { MailService } from "../mail.service";
+import { MailService } from "../mail/mail.service";
 
 @Injectable()
 export class AdminService {
@@ -18,6 +18,24 @@ export class AdminService {
 		private authService: AuthService,
 		private mailService: MailService,
 	) {}
+	async sendActivationEmail(email: string, UserId: string, activationToken: string) {
+		try {
+			await this.mailService.sendMail(
+				email,
+				"Aktywuj konto",
+				`api.radek.smallhost.pl/user/activate/${UserId}/${activationToken}`,
+			);
+
+			return {
+				isSuccess: true,
+			};
+		} catch (e) {
+			return {
+				isSuccess: false,
+				error: e.message,
+			};
+		}
+	}
 
 	parseCSV = (csvFile: string): Promise<CreateStudentDto[]> => {
 		// const csvFile = "src/data/dummyCSV.csv";
@@ -107,11 +125,7 @@ export class AdminService {
 				token: activationToken.accessToken,
 			});
 			if (response.isSuccess) {
-				await this.mailService.sendMail(
-					data.email,
-					"Rejestracja użytkownika",
-					`Aktywuj konto api.radek.smallhost.pl/user/activate/${response.userId}/${activationToken.accessToken}`,
-				);
+				await this.sendActivationEmail(data.email, response.userId, activationToken.accessToken);
 			}
 			return {
 				isSuccess: true,
