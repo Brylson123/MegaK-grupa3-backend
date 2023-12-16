@@ -102,6 +102,7 @@ export class AuthService {
 					domain: "radek.smallhost.pl",
 					httpOnly: true,
 					sameSite: 'none',
+					maxAge: 900000,
 				})
 				.json({
 					isSuccess: true,
