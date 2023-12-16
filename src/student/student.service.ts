@@ -28,6 +28,7 @@ import { DisinterestStudentDto } from "./dto/disinterest-student.dto";
 import { ValidateCreateStudent } from "../utils/validateCreateStudent";
 import { HiredStudentDto } from "./dto/hired-student";
 import { MailService } from "../mail/mail.service";
+import { HrEntity } from "../hr/entities/hr.entity";
 
 @Injectable()
 export class StudentService {
@@ -471,7 +472,11 @@ export class StudentService {
 		{ studentId }: ReservationStudentDto,
 		user: UserEntity,
 	): Promise<ReservationStudentResponse> {
-		const { hr } = user;
+		const hr = await HrEntity.findOne({
+			where: { user: user },
+			relations: ["user", "studentInterview"],
+		});
+
 		if (hr.studentInterview.some((el) => el.studentId === studentId)) {
 			throw new BadRequestException('Student już jest dodany w "Do Rozmowy".');
 		}
@@ -491,6 +496,11 @@ export class StudentService {
 			hrToStudent.student = student;
 			hrToStudent.reservationTo = new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000);
 			await hrToStudent.save();
+			await StudentEntity.update(
+				{ id: student.id, status: StudentStatus.ACCESSIBLE },
+				{ status: StudentStatus.PENDING },
+			);
+
 			return {
 				message: 'Dodano kursanta "Do rozmowy"',
 				isSuccess: true,
