@@ -28,7 +28,7 @@ export class HrController {
 	) {}
 
 	@Get("/students")
-	@Roles(UserRole.HR)
+	@Roles(UserRole.HR, UserRole.STUDENT)
 	@UseGuards(AuthGuard("jwt"), RolesGuard)
 	viewAllStudents(@Body() req: ActiveStudentsDto): Promise<viewAllActiveStudentsResponse> {
 		return this.studentService.viewAllActiveStudents(req);
