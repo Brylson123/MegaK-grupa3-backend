@@ -5,7 +5,7 @@ import { v4 as uuid } from "uuid";
 import { sign } from "jsonwebtoken";
 import { JwtPayload } from "./jwt.strategy";
 import { UserEntity } from "../user/entity/user.entity";
-import { AuthLoginRequest} from "../types";
+import { AuthLoginRequest } from "../types";
 import { UserRole } from "../types";
 
 @Injectable()
@@ -30,7 +30,7 @@ export class AuthService {
 
 	private getUserFullName = (user: UserEntity) => {
 		if (user.role === UserRole.STUDENT) {
-			return user.student?.firstName + user.student?.lastName;
+			return `${user.student?.firstName}  ${user.student?.lastName}`;
 		} else if (user.role === UserRole.HR) {
 			return user.hr.fullName;
 		} else {
