@@ -30,7 +30,7 @@ export class AuthService {
 
 	private getUserFullName = (user: UserEntity) => {
 		if (user.role === UserRole.STUDENT) {
-			return user.student?.firstName + user.student?.lastName;
+			return `${user.student?.firstName}  ${user.student?.lastName}`;
 		} else if (user.role === UserRole.HR) {
 			return user.hr.fullName;
 		} else {
@@ -101,6 +101,8 @@ export class AuthService {
 					secure: true,
 					domain: "radek.smallhost.pl",
 					httpOnly: true,
+					sameSite: 'none',
+					maxAge: 900000,
 				})
 				.json({
 					isSuccess: true,
@@ -125,6 +127,7 @@ export class AuthService {
 				secure: true,
 				domain: "radek.smallhost.pl",
 				httpOnly: true,
+				sameSite: 'none',
 			});
 			return res.json({ message: "logout" });
 		} catch (e) {

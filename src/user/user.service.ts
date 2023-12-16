@@ -1,28 +1,29 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { UserEntity } from "./entity/user.entity";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { MailService } from "../mail/mail.service";
-import { studentRegistrationTemplate } from "../templates/email/student-registration.template";
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { UserEntity } from "./entity/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { ActivateUserDto } from "./dto/activate-user.dto";
-import { ActivateUserResponse } from "../types";
+import { ActivateUserResponse, ChangePwdResponse, RecoverPasswordResponse } from "../types";
 import { hashPwd, randomSalt } from "../utils/hash-pwd";
-
+import { MailService } from "../mail/mail.service";
+import { studentRegistrationTemplate } from "../templates/email/student-registration.template";
+import { RecoverPasswordDto } from "./dto/recover-password.dto";
+import { generateRandomPassword } from "../utils/random-pwd";
+import { ChangePwdDto } from "./dto/change-password.dto";
 
 @Injectable()
 export class UserService {
-	constructor(@Inject(MailService) private mailService: MailService) {}
-
+	constructor(@Inject(MailService) private readonly mailService: MailService) {}
+	
 	async findOne(id: string) {
-		return await UserEntity.findOne({
+		const user = await UserEntity.findOne({
 			where: { id: id },
 			relations: {
 				student: true,
 				hr: true,
 			},
 		});
+		const {activeTokenId, currentTokenId, pwdHash, salt, ...restOfUser} = user;
+		return restOfUser;
 	}
 
 	async createUser(newUser: CreateUserDto): Promise<UserEntity> {
@@ -39,7 +40,7 @@ export class UserService {
 			user.email,
 			"Rejestracja na MegaK HeadHunters",
 			studentRegistrationTemplate(),
-		);
+			);
 		return user;
 	}
 
@@ -76,5 +77,57 @@ export class UserService {
 			message: "Użytkownik został aktywowany",
 			isSuccess: true,
 		};
+	}
+
+	async recover(recover: RecoverPasswordDto): Promise<RecoverPasswordResponse> {
+		const user = await UserEntity.findOne({
+			where: {
+				email: recover.email,
+			},
+		});
+
+		if (!user) {
+			return {
+				isSuccess: false,
+			};
+		}
+
+		const password = generateRandomPassword();
+		user.pwdHash = hashPwd(password, user.salt);
+		await user.save();
+		
+		await this.mailService.sendMail(
+			recover.email,
+			"odzyskiwanie hasła do konta:",
+			`<p>Twoje nowe hasło to:${password}</p>`,
+		);
+
+		return {
+			isSuccess: true,
+		};
+	}
+
+async changePwd(data: ChangePwdDto): Promise<ChangePwdResponse> {
+		try {
+			const userToChangePwd = await UserEntity.findOne({ where: { id: data.userId } });
+			const password = hashPwd(data.oldPwd, userToChangePwd.salt);
+			if (userToChangePwd.pwdHash !== password) {
+				return {
+					isSuccess: false,
+					message: "Niepoprawne dane logowania!",
+				};
+			}
+			userToChangePwd.salt = randomSalt(128);
+			userToChangePwd.pwdHash = hashPwd(data.newPwd, userToChangePwd.salt);
+			userToChangePwd.save();
+			return {
+				isSuccess: true,
+			};
+		} catch (e) {
+			return {
+				isSuccess: false,
+				message: e.message,
+			};
+		}
 	}
 }

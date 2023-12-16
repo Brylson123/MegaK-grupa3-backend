@@ -1,14 +1,14 @@
-import { Injectable, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CreateHrDto } from "../hr/dto/create-hr.dto";
 import { createReadStream } from "fs";
 import { StudentService } from "../student/student.service";
-import { UserService } from "../user/user.service";
 import { HrService } from "../hr/hr.service";
 import { AuthService } from "../auth/auth.service";
 import * as csv from "csv-parser";
 import { v4 as uuid } from "uuid";
-import { AdminInsertStudent, CreateHrResponse, UserRole } from "../types";
+import { CreateHrResponse } from "../types";
 import { CreateStudentDto } from "../student/dto/createStudentDto";
+import { MailService } from "../mail/mail.service";
 
 @Injectable()
 export class AdminService {
@@ -16,10 +16,29 @@ export class AdminService {
 		private studentService: StudentService,
 		private hrService: HrService,
 		private authService: AuthService,
+		private mailService: MailService,
 	) {}
+	async sendActivationEmail(email: string, UserId: string, activationToken: string) {
+		try {
+			await this.mailService.sendMail(
+				email,
+				"Aktywuj konto",
+				`api.radek.smallhost.pl/user/activate/${UserId}/${activationToken}`,
+			);
 
-	parseCSV = (): Promise<CreateStudentDto[]> => {
-		const csvFile = "src/data/dummyCSV.csv";
+			return {
+				isSuccess: true,
+			};
+		} catch (e) {
+			return {
+				isSuccess: false,
+				error: e.message,
+			};
+		}
+	}
+
+	parseCSV = (csvFile: string): Promise<CreateStudentDto[]> => {
+		// const csvFile = "src/data/dummyCSV.csv";
 		const results = [];
 
 		return new Promise((resolve, reject) => {
@@ -65,12 +84,10 @@ export class AdminService {
 		});
 	};
 
-	@UsePipes(new ValidationPipe())
-	async addStudents() {
-		const createdStudents = [];
-		const errors = [];
-		const students: CreateStudentDto[] = await this.parseCSV();
+	createStudentsFromArray = async (students: CreateStudentDto[]) => {
 		try {
+			const errors = [];
+			const createdStudents = [];
 			for (const student of students) {
 				const activationToken = this.authService.createToken(uuid());
 				const response = await this.studentService.createStudent({
@@ -79,6 +96,7 @@ export class AdminService {
 				});
 				if (response.isSuccess) {
 					console.log(response);
+					await this.mailService.sendMail(student.email, response.studentId, activationToken.accessToken);
 					createdStudents.push(response.studentId);
 				} else {
 					console.log(response);
@@ -98,7 +116,16 @@ export class AdminService {
 			};
 		}
 	}
-	@UsePipes(new ValidationPipe())
+
+	createStudentsFromJson(data: CreateStudentDto[]) {
+		return this.createStudentsFromArray(data);
+	}
+
+	async addStudents(csvFile?: string) {
+		const students: CreateStudentDto[] = await this.parseCSV(csvFile);
+		return this.createStudentsFromArray(students);
+	}
+
 	async addHr(data: CreateHrDto): Promise<CreateHrResponse> {
 		const activationToken = this.authService.createToken(uuid());
 		try {
@@ -107,7 +134,7 @@ export class AdminService {
 				token: activationToken.accessToken,
 			});
 			if (response.isSuccess) {
-				console.log(response);
+				await this.sendActivationEmail(data.email, response.userId, activationToken.accessToken);
 			}
 			return {
 				isSuccess: true,

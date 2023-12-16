@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class DisinterestStudentDto {
+export class RecoverPasswordDto {
 	@IsString()
 	@IsNotEmpty()
-	studentId: string;
+	email: string;
 }
