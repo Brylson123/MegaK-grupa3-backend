@@ -101,6 +101,8 @@ export class AuthService {
 					secure: true,
 					domain: "radek.smallhost.pl",
 					httpOnly: true,
+					sameSite: 'none',
+					maxAge: 900000,
 				})
 				.json({
 					isSuccess: true,
@@ -125,6 +127,7 @@ export class AuthService {
 				secure: true,
 				domain: "radek.smallhost.pl",
 				httpOnly: true,
+				sameSite: 'none',
 			});
 			return res.json({ message: "logout" });
 		} catch (e) {
